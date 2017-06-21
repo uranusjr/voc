@@ -398,7 +398,7 @@ public class Python {
             args = {"object"}
     )
     public static org.python.types.Object ascii(org.python.Object object) {
-        String string = ((org.python.types.Str)object.__repr__()).value;
+        String string = ((org.python.types.Str) object.__repr__()).value;
 
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < string.length(); i++) {
