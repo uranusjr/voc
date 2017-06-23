@@ -154,6 +154,8 @@ public class Int extends org.python.types.Object {
                 return new org.python.types.Bool(1);
             }
             return new org.python.types.Bool(0);
+        } else if (other instanceof org.python.types.Float) {
+            return ((org.python.types.Float) other).__eq__(this.__float__());
         }
         return org.python.types.NotImplementedType.NOT_IMPLEMENTED;
     }

@@ -26,19 +26,13 @@ public class Complex extends org.python.types.Object {
         return this.hashCode();
     }
 
-    public Complex(org.python.types.Float real_val, org.python.types.Float imag_val) {
-        this.real = real_val;
-        this.imag = imag_val;
-    }
-
     public Complex(double real, double imag) {
-        this.real = new org.python.types.Float(real);
-        this.imag = new org.python.types.Float(imag);
+        this(new org.python.types.Float(real), new org.python.types.Float(imag));
     }
 
-    public Complex(double imag) {
-        this.real = new org.python.types.Float(0);
-        this.imag = new org.python.types.Float(imag);
+    public Complex(org.python.types.Float real, org.python.types.Float imag) {
+        this.real = real;
+        this.imag = imag;
     }
 
     @org.python.Method(
@@ -112,6 +106,14 @@ public class Complex extends org.python.types.Object {
         }
     }
 
+    // public org.python.Object __new__() {
+    //     throw new org.python.exceptions.NotImplementedError("bool.__new__() has not been implemented.");
+    // }
+
+    // public org.python.Object __init__() {
+    //     throw new org.python.exceptions.NotImplementedError("bool.__init__() has not been implemented.");
+    // }
+
     private String partToStr(org.python.types.Float x) {
         String x_str;
         if (x.value != 0.0) {
@@ -150,43 +152,15 @@ public class Complex extends org.python.types.Object {
         return x_str;
     }
 
-    // public org.python.Object __new__() {
-    //     throw new org.python.exceptions.NotImplementedError("bool.__new__() has not been implemented.");
-    // }
-
-    // public org.python.Object __init__() {
-    //     throw new org.python.exceptions.NotImplementedError("bool.__init__() has not been implemented.");
-    // }
-
     @org.python.Method(
-            __doc__ = ""
+            __doc__ = "Return repr(self)."
     )
     public org.python.Object __repr__() {
-        java.lang.StringBuilder buffer = new java.lang.StringBuilder();
-        boolean real_present = true;
-        if (this.real.value != 0) {
-            buffer.append("(");
-            if (((org.python.types.Bool) ((this.real).__int__().__eq__(this.real))).value) {
-                buffer.append(((org.python.types.Str) this.real.__int__().__repr__()).value);
-            } else {
-                buffer.append(((org.python.types.Str) this.real.__repr__()).value);
-            }
+        if (this.real.value != 0.0 || this.real.isNegativeZero()) {
+            return new org.python.types.Str("(" + partToStr(this.real) + ((this.imag.value >= 0.0 && !this.imag.isNegativeZero()) ? "+" : "-") + partToStr(new org.python.types.Float(Math.abs(this.imag.value))) + "j)");
         } else {
-            real_present = false;
+            return new org.python.types.Str(partToStr(this.imag) + "j");
         }
-        if (this.real.value != 0 && this.imag.value >= 0) {
-            buffer.append("+");
-        }
-        if (((org.python.types.Bool) ((this.imag).__int__().__eq__(this.imag))).value) {
-            buffer.append(((org.python.types.Str) (this.imag).__int__().__repr__()).value);
-        } else {
-            buffer.append(((org.python.types.Str) (this.imag).__repr__()).value);
-        }
-        buffer.append("j");
-        if (real_present) {
-            buffer.append(")");
-        }
-        return new org.python.types.Str(buffer.toString());
     }
 
     @org.python.Method(
@@ -305,11 +279,7 @@ public class Complex extends org.python.types.Object {
             __doc__ = ""
     )
     public org.python.Object __str__() {
-        if (this.real.value != 0.0 || this.real.isNegativeZero()) {
-            return new org.python.types.Str("(" + partToStr(this.real) + ((this.imag.value >= 0.0 && !this.imag.isNegativeZero()) ? "+" : "-") + partToStr(new org.python.types.Float(Math.abs(this.imag.value))) + "j)");
-        } else {
-            return new org.python.types.Str(partToStr(this.imag) + "j");
-        }
+        return this.__repr__();
     }
 
     @org.python.Method(
