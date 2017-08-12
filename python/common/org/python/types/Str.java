@@ -11,6 +11,7 @@ public class Str extends org.python.types.Object {
      */
     void setValue(org.python.Object obj) {
         this.value = ((org.python.types.Str) obj).value;
+
     }
 
     public java.lang.Object toJava() {
@@ -137,14 +138,14 @@ public class Str extends org.python.types.Object {
 
 
     @org.python.Method(
-            __doc__ = ""
+            __doc__ = "Return str(self)."
     )
     public org.python.Object __str__() {
         return new org.python.types.Str(this.value);
     }
 
     @org.python.Method(
-            __doc__ = ""
+            __doc__ = "S.__format__(format_spec) -> str\n\nReturn a formatted version of S as described by format_spec."
     )
     public org.python.Object __format__(org.python.Object format_string) {
         throw new org.python.exceptions.NotImplementedError("__format__() has not been implemented.");
@@ -189,7 +190,7 @@ public class Str extends org.python.types.Object {
     }
 
     @org.python.Method(
-            __doc__ = "",
+            __doc__ = "Return self<value.",
             args = {"other"}
     )
     public org.python.Object __lt__(org.python.Object other) {
@@ -202,7 +203,7 @@ public class Str extends org.python.types.Object {
     }
 
     @org.python.Method(
-            __doc__ = "",
+            __doc__ = "Return self<=value.",
             args = {"other"}
     )
     public org.python.Object __le__(org.python.Object other) {
@@ -215,7 +216,7 @@ public class Str extends org.python.types.Object {
     }
 
     @org.python.Method(
-            __doc__ = "",
+            __doc__ = "Return self==value.",
             args = {"other"}
     )
     public org.python.Object __eq__(org.python.Object other) {
@@ -228,7 +229,7 @@ public class Str extends org.python.types.Object {
     }
 
     @org.python.Method(
-            __doc__ = "",
+            __doc__ = "Return self>value.",
             args = {"other"}
     )
     public org.python.Object __gt__(org.python.Object other) {
@@ -241,7 +242,7 @@ public class Str extends org.python.types.Object {
     }
 
     @org.python.Method(
-            __doc__ = "",
+            __doc__ = "Return self>=value.",
             args = {"other"}
     )
     public org.python.Object __ge__(org.python.Object other) {
@@ -259,7 +260,7 @@ public class Str extends org.python.types.Object {
     }
 
     @org.python.Method(
-            __doc__ = ""
+            __doc__ = "__dir__() -> list\ndefault dir() implementation"
     )
     public org.python.types.List __dir__() {
         throw new org.python.exceptions.NotImplementedError("__dir__() has not been implemented.");
@@ -273,7 +274,7 @@ public class Str extends org.python.types.Object {
     }
 
     @org.python.Method(
-            __doc__ = ""
+            __doc__ = "Return self[key]."
     )
     public org.python.Object __getitem__(org.python.Object index) {
         try {
@@ -353,7 +354,7 @@ public class Str extends org.python.types.Object {
     }
 
     @org.python.Method(
-            __doc__ = ""
+            __doc__ = "Implement iter(self)."
     )
     public org.python.Object __iter__() {
         java.util.List<org.python.Object> listOfStrs = new java.util.ArrayList<org.python.Object>();
@@ -364,7 +365,7 @@ public class Str extends org.python.types.Object {
     }
 
     @org.python.Method(
-            __doc__ = ""
+            __doc__ = "Return key in self."
     )
     public org.python.types.Int __contains__(org.python.Object item) {
         if (item instanceof org.python.types.Str) {
@@ -399,7 +400,7 @@ public class Str extends org.python.types.Object {
     }
 
     @org.python.Method(
-            __doc__ = ""
+            __doc__ = "Return self+value."
     )
     public org.python.Object __add__(org.python.Object other) {
         if (other instanceof org.python.types.Str) {
@@ -419,7 +420,7 @@ public class Str extends org.python.types.Object {
     }
 
     @org.python.Method(
-            __doc__ = ""
+            __doc__ = "Return self*value.n"
     )
     public org.python.Object __mul__(org.python.Object other) {
         if (other instanceof org.python.types.Int) {
@@ -444,7 +445,7 @@ public class Str extends org.python.types.Object {
     }
 
     @org.python.Method(
-            __doc__ = ""
+            __doc__ = "Return self%value."
     )
     public org.python.Object __mod__(org.python.Object other) {
         java.util.List<java.lang.Object> format_args = new java.util.ArrayList<java.lang.Object>();
@@ -458,12 +459,21 @@ public class Str extends org.python.types.Object {
             for (org.python.Object obj : oth.value) {
                 format_args.add(obj.toJava());
             }
+        } else if (other instanceof org.python.types.Range) {
+            try {
+                format_args.add(other.toJava());
+                Object obj = new org.python.types.Str(java.lang.String.format(this.value, format_args.toArray()));
+
+            } catch (IllegalArgumentException e) {
+                throw new org.python.exceptions.TypeError("not enough arguments for format string");
+
+            }
         } else if (other instanceof org.python.types.NoneType) {
             throw new org.python.exceptions.TypeError("not all arguments converted during string formatting");
+
         } else {
             format_args.add(other.toJava());
         }
-
         return new org.python.types.Str(java.lang.String.format(this.value, format_args.toArray()));
     }
 
@@ -505,14 +515,14 @@ public class Str extends org.python.types.Object {
     }
 
     @org.python.Method(
-            __doc__ = ""
+            __doc__ = "Return self*value."
     )
     public org.python.Object __rmul__(org.python.Object other) {
         throw new org.python.exceptions.NotImplementedError("__rmul__() has not been implemented.");
     }
 
     @org.python.Method(
-            __doc__ = ""
+            __doc__ = "Return value%self."
     )
     public org.python.Object __rmod__(org.python.Object other) {
         throw new org.python.exceptions.NotImplementedError("__rmod__() has not been implemented.");
@@ -533,9 +543,19 @@ public class Str extends org.python.types.Object {
     public org.python.Object __imod__(org.python.Object other) {
         if (other instanceof org.python.types.NoneType) {
             throw new org.python.exceptions.TypeError("not all arguments converted during string formatting");
+        } else if (other instanceof org.python.types.Range) {
+            try {
+                super.__imod__(other);
+                return this;
+
+            } catch (org.python.exceptions.TypeError e) {
+                throw new org.python.exceptions.TypeError("not enough arguments for format string");
+
+            }
+        } else {
+            super.__imod__(other);
+            return this;
         }
-        super.__imod__(other);
-        return this;
     }
 
     @org.python.Method(

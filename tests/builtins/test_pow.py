@@ -110,15 +110,10 @@ class BuiltinTwoargPowFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTest
     functions = ["pow"]
 
     not_implemented = [
-        'test_bool_complex',
-
         'test_complex_complex',
 
         'test_float_complex',
         'test_float_float',
-
-        'test_int_complex',
-        'test_int_float',
     ]
 
     is_flakey = [
