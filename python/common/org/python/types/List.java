@@ -609,7 +609,7 @@ public class List extends org.python.types.Object implements org.python.java.Col
                 throw new org.python.exceptions.TypeError("'" + other.typeName() + "' object is not iterable");
             }
             try {
-                while (true) this.value.add(it.__next__());
+                while (true) { this.value.add(it.__next__()); }
             } catch (org.python.exceptions.StopIteration si) {
             }
         }
