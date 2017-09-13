@@ -1,7 +1,11 @@
 package org.python.types;
 
-public class FrozenSet extends org.python.types.Object {
+public class FrozenSet extends org.python.types.Object implements org.python.java.Collection {
     public java.util.Set<org.python.Object> value;
+
+    public java.util.Collection<org.python.Object> getCollection() {
+        return this.value;
+    }
 
     /**
      * A utility method to update the internal value of this object.
@@ -129,7 +133,6 @@ public class FrozenSet extends org.python.types.Object {
         return new org.python.types.Str(buffer.toString());
     }
 
-
     @org.python.Method(
             __doc__ = "Return len(self)."
     )
@@ -144,6 +147,7 @@ public class FrozenSet extends org.python.types.Object {
     public org.python.Object __contains__(org.python.Object other) {
         return new org.python.types.Bool(this.value.contains(other));
     }
+
 
     @org.python.Method(
             __doc__ = "",

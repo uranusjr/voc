@@ -1,7 +1,11 @@
 package org.python.types;
 
-public class Set extends org.python.types.Object {
+public class Set extends org.python.types.Object implements org.python.java.Collection {
     public java.util.Set<org.python.Object> value;
+
+    public java.util.Collection<org.python.Object> getCollection() {
+        return this.value;
+    }
 
     /**
      * A utility method to update the internal value of this object.

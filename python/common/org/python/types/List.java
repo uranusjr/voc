@@ -5,8 +5,12 @@ import org.Python;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class List extends org.python.types.Object {
+public class List extends org.python.types.Collection implements org.python.java.Collection {
     public java.util.List<org.python.Object> value;
+
+    public java.util.Collection<org.python.Object> getCollection() {
+        return this.value;
+    }
 
     /**
      * A utility method to update the internal value of this object.
@@ -31,14 +35,13 @@ public class List extends org.python.types.Object {
         throw new org.python.exceptions.AttributeError(this, "__hash__");
     }
 
-    public List() {
-        super();
-        this.value = new java.util.ArrayList<org.python.Object>();
-    }
-
     public List(java.util.List<org.python.Object> list) {
         super();
         this.value = list;
+    }
+
+    public List() {
+        this(new java.util.ArrayList<org.python.Object>());
     }
 
     @org.python.Method(
@@ -47,34 +50,9 @@ public class List extends org.python.types.Object {
             default_args = {"iterable"}
     )
     public List(org.python.Object[] args, java.util.Map<java.lang.String, org.python.Object> kwargs) {
-        super();
-        if (args[0] == null) {
-            this.value = new java.util.ArrayList<org.python.Object>();
-        } else {
-            if (args[0] instanceof org.python.types.List) {
-                this.value = new java.util.ArrayList<org.python.Object>(
-                        ((org.python.types.List) args[0]).value
-                );
-            } else if (args[0] instanceof org.python.types.Set) {
-                this.value = new java.util.ArrayList<org.python.Object>(
-                        ((org.python.types.Set) args[0]).value
-                );
-            } else if (args[0] instanceof org.python.types.Tuple) {
-                this.value = new java.util.ArrayList<org.python.Object>(
-                        ((org.python.types.Tuple) args[0]).value
-                );
-            } else {
-                org.python.Object iterator = org.Python.iter(args[0]);
-                java.util.List<org.python.Object> generated = new java.util.ArrayList<org.python.Object>();
-                try {
-                    while (true) {
-                        org.python.Object next = iterator.__next__();
-                        generated.add(next);
-                    }
-                } catch (org.python.exceptions.StopIteration si) {
-                }
-                this.value = generated;
-            }
+        this();
+        if (args[0] != null) {
+            this.extend(args[0]);
         }
     }
 
@@ -105,43 +83,7 @@ public class List extends org.python.types.Object {
             args = {"other"}
     )
     public org.python.Object __iadd__(org.python.Object other) {
-        if (other instanceof org.python.types.List) {
-            this.value.addAll(((org.python.types.List) other).value);
-        } else if (other instanceof org.python.types.Tuple) {
-            this.value.addAll(((org.python.types.Tuple) other).value);
-        } else if (other instanceof org.python.types.Set) {
-            this.value.addAll(((org.python.types.Set) other).value);
-        } else if (other instanceof org.python.types.FrozenSet) {
-            this.value.addAll(((org.python.types.FrozenSet) other).value);
-        } else if (
-                (other instanceof org.python.types.Str) ||
-                (other instanceof org.python.types.Dict) ||
-                (other instanceof org.python.types.Range) ||
-                (other instanceof org.python.types.Bytes) ||
-                (other instanceof org.python.types.ByteArray)) {
-            org.python.Object iter = null;
-            if (other instanceof org.python.types.Str) {
-                iter = ((org.python.types.Str)other).__iter__();
-            } else if (other instanceof org.python.types.Dict) {
-                iter = ((org.python.types.Dict)other).__iter__();
-            } else if (other instanceof org.python.types.Range) {
-                iter = ((org.python.types.Range)other).__iter__();
-            } else if (other instanceof org.python.types.Bytes) {
-                iter = ((org.python.types.Bytes)other).__iter__();
-            } else if (other instanceof org.python.types.ByteArray) {
-                iter = ((org.python.types.ByteArray)other).__iter__();
-            }
-            while (true) {
-                try {
-                    this.value.add(iter.__next__());
-                } catch (org.python.exceptions.StopIteration ae) {
-                    break;
-                }
-            }
-        } else {
-            throw new org.python.exceptions.TypeError(
-                    String.format("'%s' object is not iterable", Python.typeName(other.getClass())));
-        }
+        this.extend(other);
         return this;
     }
 
@@ -535,15 +477,7 @@ public class List extends org.python.types.Object {
             args = {"item"}
     )
     public org.python.Object __contains__(org.python.Object item) {
-        boolean found = false;
-        for (int i = 0; i < this.value.size(); i++) {
-            if (((org.python.types.Bool) org.python.types.Object.__cmp_bool__(
-                    item, this.value.get(i), org.python.types.Object.CMP_OP.EQ)).value) {
-                found = true;
-                break;
-            }
-        }
-        return new org.python.types.Bool(found);
+        return new org.python.types.Bool(this.value.contains(item));
     }
 
     @org.python.Method(
@@ -661,26 +595,23 @@ public class List extends org.python.types.Object {
             args = {"other"}
     )
     public org.python.Object extend(org.python.Object other) {
-        if (other instanceof org.python.types.List) {
-            this.value.addAll(((org.python.types.List) other).value);
-        } else if (other instanceof org.python.types.FrozenSet) {
-            this.value.addAll(((org.python.types.FrozenSet) other).value);
-        } else if (other instanceof org.python.types.Set) {
-            this.value.addAll(((org.python.types.Set) other).value);
-        } else if (other instanceof org.python.types.Tuple) {
-            this.value.addAll(((org.python.types.Tuple) other).value);
-        } else if (other instanceof org.python.types.Dict) {
-            this.value.addAll(((org.python.types.Dict) other).value.keySet());
-        } else if (other instanceof org.python.types.Iterator) {
+        if (other instanceof org.python.java.Collection) {
+            // Optimization using the internal Java implementation.
+            this.value.addAll(((org.python.java.Collection) other).getCollection());
+        } else {
+            // Standard implementation using Python's iterable protocol.
+            // 1. Get an iterator for the iterable, raising exception on failure.
+            // 2. Walk through the iterator, adding each item.
+            org.python.Object it = null;
             try {
-                while (true) {
-                    org.python.Object next = other.__next__();
-                    this.value.add(next);
-                }
+                it = other.__iter__();
+            } catch (org.python.exceptions.AttributeError ae) {
+                throw new org.python.exceptions.TypeError("'" + other.typeName() + "' object is not iterable");
+            }
+            try {
+                while (true) this.value.add(other.__next__());
             } catch (org.python.exceptions.StopIteration si) {
             }
-        } else {
-            throw new org.python.exceptions.TypeError("'" + other.typeName() + "' object is not iterable");
         }
         return org.python.types.NoneType.NONE;
     }

@@ -1,7 +1,11 @@
 package org.python.types;
 
-public class Tuple extends org.python.types.Object {
+public class Tuple extends org.python.types.Object implements org.python.java.Collection {
     public java.util.List<org.python.Object> value;
+
+    public java.util.Collection<org.python.Object> getCollection() {
+        return this.value;
+    }
 
     /**
      * A utility method to update the internal value of this object.
