@@ -5,7 +5,7 @@ import org.Python;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class List extends org.python.types.Collection implements org.python.java.Collection {
+public class List extends org.python.types.Object implements org.python.java.Collection {
     public java.util.List<org.python.Object> value;
 
     public java.util.Collection<org.python.Object> getCollection() {
@@ -609,7 +609,7 @@ public class List extends org.python.types.Collection implements org.python.java
                 throw new org.python.exceptions.TypeError("'" + other.typeName() + "' object is not iterable");
             }
             try {
-                while (true) this.value.add(other.__next__());
+                while (true) this.value.add(it.__next__());
             } catch (org.python.exceptions.StopIteration si) {
             }
         }
