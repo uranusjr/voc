@@ -2,8 +2,12 @@ package org.python.types;
 
 import java.util.Arrays;
 
-public class Bytes extends org.python.types.Object {
+public class Bytes extends org.python.types.Object implements org.python.java.ByteArray {
     public byte[] value;
+
+    public byte[] getByteArray() {
+        return this.value;
+    }
 
     /**
      * A utility method to update the internal value of this object.
@@ -92,14 +96,8 @@ public class Bytes extends org.python.types.Object {
             args = {"other"}
     )
     public org.python.Object __eq__(org.python.Object other) {
-        if (other instanceof org.python.types.Bytes) {
-            byte[] other_value = ((org.python.types.Bytes) other).value;
-            return new org.python.types.Bool(Arrays.equals(this.value, other_value));
-        } else if (other instanceof org.python.types.ByteArray) {
-            byte[] other_value = ((org.python.types.ByteArray) other).value;
-            if (other_value == null) {
-                other_value = new byte[0];
-            }
+        if (other instanceof org.python.java.ByteArray) {
+            byte[] other_value = ((org.python.java.ByteArray) other).getByteArray();
             return new org.python.types.Bool(Arrays.equals(this.value, other_value));
         }
         return org.python.types.NotImplementedType.NOT_IMPLEMENTED;
@@ -110,14 +108,8 @@ public class Bytes extends org.python.types.Object {
             args = {"other"}
     )
     public org.python.Object __add__(org.python.Object other) {
-        if (other instanceof org.python.types.Bytes) {
-            byte[] other_bytes = (byte[]) ((org.python.types.Bytes) other).value;
-            byte[] new_bytes = new byte[this.value.length + other_bytes.length];
-            System.arraycopy(this.value, 0, new_bytes, 0, this.value.length);
-            System.arraycopy(other_bytes, 0, new_bytes, this.value.length, other_bytes.length);
-            return new Bytes(new_bytes);
-        } else if (other instanceof org.python.types.ByteArray) {
-            byte[] other_bytes = (byte[]) ((org.python.types.ByteArray) other).value;
+        if (other instanceof org.python.java.ByteArray) {
+            byte[] other_bytes = (byte[]) ((org.python.java.ByteArray) other).getByteArray();
             if (other_bytes == null) {
                 return this;
             }
@@ -188,25 +180,8 @@ public class Bytes extends org.python.types.Object {
             args = {"other"}
     )
     public org.python.Object __ge__(org.python.Object other) {
-        if (other instanceof org.python.types.Bytes) {
-            byte[] other_bytes = (byte[]) ((org.python.types.Bytes) other).value;
-            for (int i = 0; i < Math.min(this.value.length, other_bytes.length); i++) {
-                if (this.value[i] > other_bytes[i]) {
-                    return new org.python.types.Bool(1);
-                }
-                if (this.value[i] < other_bytes[i]) {
-                    return new org.python.types.Bool(0);
-                }
-            }
-            if (this.value.length < other_bytes.length) {
-                return new org.python.types.Bool(0);
-            }
-            return new org.python.types.Bool(1);
-        } else if (other instanceof org.python.types.ByteArray) {
-            byte[] other_bytes = (byte[]) ((org.python.types.ByteArray) other).value;
-            if (other_bytes == null) {
-                return new org.python.types.Bool(1);
-            }
+        if (other instanceof org.python.java.ByteArray) {
+            byte[] other_bytes = (byte[]) ((org.python.java.ByteArray) other).getByteArray();
             for (int i = 0; i < Math.min(this.value.length, other_bytes.length); i++) {
                 if (this.value[i] > other_bytes[i]) {
                     return new org.python.types.Bool(1);
@@ -228,25 +203,8 @@ public class Bytes extends org.python.types.Object {
             args = {"other"}
     )
     public org.python.Object __gt__(org.python.Object other) {
-        if (other instanceof org.python.types.Bytes) {
-            byte[] other_bytes = (byte[]) ((org.python.types.Bytes) other).value;
-            for (int i = 0; i < Math.min(this.value.length, other_bytes.length); i++) {
-                if (this.value[i] > other_bytes[i]) {
-                    return new org.python.types.Bool(1);
-                }
-                if (this.value[i] < other_bytes[i]) {
-                    return new org.python.types.Bool(0);
-                }
-            }
-            if (this.value.length <= other_bytes.length) {
-                return new org.python.types.Bool(0);
-            }
-            return new org.python.types.Bool(1);
-        } else if (other instanceof org.python.types.ByteArray) {
-            byte[] other_bytes = (byte[]) ((org.python.types.ByteArray) other).value;
-            if (other_bytes == null) {
-                other_bytes = new byte[0];
-            }
+        if (other instanceof org.python.java.ByteArray) {
+            byte[] other_bytes = (byte[]) ((org.python.java.ByteArray) other).getByteArray();
             for (int i = 0; i < Math.min(this.value.length, other_bytes.length); i++) {
                 if (this.value[i] > other_bytes[i]) {
                     return new org.python.types.Bool(1);
@@ -268,25 +226,8 @@ public class Bytes extends org.python.types.Object {
             args = {"other"}
     )
     public org.python.Object __le__(org.python.Object other) {
-        if (other instanceof org.python.types.Bytes) {
-            byte[] other_bytes = (byte[]) ((org.python.types.Bytes) other).value;
-            for (int i = 0; i < Math.min(this.value.length, other_bytes.length); i++) {
-                if (this.value[i] < other_bytes[i]) {
-                    return new org.python.types.Bool(1);
-                }
-                if (this.value[i] > other_bytes[i]) {
-                    return new org.python.types.Bool(0);
-                }
-            }
-            if (this.value.length <= other_bytes.length) {
-                return new org.python.types.Bool(1);
-            }
-            return new org.python.types.Bool(0);
-        } else if (other instanceof org.python.types.ByteArray) {
-            byte[] other_bytes = (byte[]) ((org.python.types.ByteArray) other).value;
-            if (other_bytes == null) {
-                other_bytes = new byte[0];
-            }
+        if (other instanceof org.python.java.ByteArray) {
+            byte[] other_bytes = (byte[]) ((org.python.java.ByteArray) other).getByteArray();
             for (int i = 0; i < Math.min(this.value.length, other_bytes.length); i++) {
                 if (this.value[i] < other_bytes[i]) {
                     return new org.python.types.Bool(1);
@@ -308,22 +249,8 @@ public class Bytes extends org.python.types.Object {
             args = {"other"}
     )
     public org.python.Object __lt__(org.python.Object other) {
-        if (other instanceof org.python.types.Bytes) {
-            byte[] other_bytes = (byte[]) ((org.python.types.Bytes) other).value;
-            for (int i = 0; i < Math.min(this.value.length, other_bytes.length); i++) {
-                if (this.value[i] < other_bytes[i]) {
-                    return new org.python.types.Bool(1);
-                }
-                if (this.value[i] > other_bytes[i]) {
-                    return new org.python.types.Bool(0);
-                }
-            }
-            if (this.value.length < other_bytes.length) {
-                return new org.python.types.Bool(1);
-            }
-            return new org.python.types.Bool(0);
-        } else if (other instanceof org.python.types.ByteArray) {
-            byte[] other_bytes = (byte[]) ((org.python.types.ByteArray) other).value;
+        if (other instanceof org.python.java.ByteArray) {
+            byte[] other_bytes = (byte[]) ((org.python.java.ByteArray) other).getByteArray();
             if (other_bytes == null) {
                 return new org.python.types.Bool(0);
             }
