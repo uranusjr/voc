@@ -68,8 +68,8 @@ public class IntegerOperation {
             return new org.python.types.Complex(x.getInteger() - complex.real.value, 0.0 - complex.imag.value);
         }
         throw new org.python.exceptions.TypeError(java.lang.String.format(
-                "unsupported operand type(s) for -: '%s' and '%s'",
-                inplace ? "+=" : "+", x.typeName(), y.typeName()
+                "unsupported operand type(s) for %s: '%s' and '%s'",
+                inplace ? "-=" : "-", x.typeName(), y.typeName()
         ));
     }
 
@@ -248,7 +248,7 @@ public class IntegerOperation {
             return new org.python.types.Int(result);
         }
         throw new org.python.exceptions.TypeError(java.lang.String.format(
-                "unsupported operand type(s) for &: '%s' and '%s'",
+                "unsupported operand type(s) for %s: '%s' and '%s'",
                 inplace ? "&=" : "&", x.typeName(), y.typeName()
         ));
     }
@@ -262,7 +262,7 @@ public class IntegerOperation {
             return new org.python.types.Int(result);
         }
         throw new org.python.exceptions.TypeError(java.lang.String.format(
-                "unsupported operand type(s) for |: '%s' and '%s'",
+                "unsupported operand type(s) for %s: '%s' and '%s'",
                 inplace ? "|=" : "|", x.typeName(), y.typeName()
         ));
     }
@@ -276,7 +276,7 @@ public class IntegerOperation {
             return new org.python.types.Int(result);
         }
         throw new org.python.exceptions.TypeError(java.lang.String.format(
-                "unsupported operand type(s) for ^: '%s' and '%s'",
+                "unsupported operand type(s) for %s: '%s' and '%s'",
                 inplace ? "^=" : "^", x.typeName(), y.typeName()
         ));
     }
