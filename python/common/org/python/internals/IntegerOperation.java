@@ -158,13 +158,21 @@ public class IntegerOperation {
 
     public static org.python.Object modulo(org.python.java.Integer x, org.python.Object y, boolean inplace) {
         if (y instanceof org.python.java.Integer) {
-            long value = x.getInteger();
-            long result = Math.floorMod(value, getNonZeroInteger(y));
+            long xValue = x.getInteger();
+            long yValue = getNonZeroInteger(y);
+            long result = xValue % yValue;
+            if (yValue > 0 && result < 0) {
+                // second operand is positive, ensure that result is positive
+                result += yValue;
+            } else if (yValue < 0 && result > 0) {
+                // second operand is negative, ensure that result is negative
+                result += yValue; // subtract yValue, which is negative
+            }
             // Mimic a CPython bug in Python < 3.6:
             // False % value is False, not 0; True % value returns True if the result should be 1.
             // All other combinations returns an integer (or raises an error).
             // TODO: Is there a reference in what version this was fixed?
-            if (org.Python.VERSION < 0x03060000 && x instanceof org.python.types.Bool && (value == 0 || result == 1)) {
+            if (org.Python.VERSION < 0x03060000 && x instanceof org.python.types.Bool && (xValue == 0 || result == 1)) {
                 return new org.python.types.Bool(result != 0);
             }
             return new org.python.types.Int(result);
