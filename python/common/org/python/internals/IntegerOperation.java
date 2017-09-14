@@ -208,7 +208,7 @@ public class IntegerOperation {
             data.add(modulo(x, y, false));
         } catch (org.python.exceptions.TypeError te) {
             throw new org.python.exceptions.TypeError(java.lang.String.format(
-                    "unsupported operand type(s) for divmod: '%s' and '%s'",
+                    "unsupported operand type(s) for divmod(): '%s' and '%s'",
                     x.typeName(), y.typeName()
             ));
         }
