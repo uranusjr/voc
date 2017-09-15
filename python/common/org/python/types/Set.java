@@ -103,7 +103,7 @@ public class Set extends org.python.types.Object implements org.python.java.Set 
             args = {"index"}
     )
     public org.python.Object __getitem__(org.python.Object index) {
-        if (index instanceof org.python.types.Int || index instanceof org.python.types.Bool) {
+        if (index instanceof org.python.java.Integer) {
             throw new org.python.exceptions.TypeError("'set' object does not support indexing");
         } else {
             throw new org.python.exceptions.TypeError("'set' object is not subscriptable");

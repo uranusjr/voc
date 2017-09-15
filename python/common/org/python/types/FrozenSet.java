@@ -82,6 +82,18 @@ public class FrozenSet extends org.python.types.Object implements org.python.jav
     }
 
     @org.python.Method(
+            __doc__ = "",
+            args = {"index"}
+    )
+    public org.python.Object __getitem__(org.python.Object index) {
+        if (index instanceof org.python.java.Integer) {
+            throw new org.python.exceptions.TypeError("'frozenset' object does not support indexing");
+        } else {
+            throw new org.python.exceptions.TypeError("'frozenset' object is not subscriptable");
+        }
+    }
+
+    @org.python.Method(
             __doc__ = ""
     )
     public org.python.Object __invert__() {
