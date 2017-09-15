@@ -335,16 +335,13 @@ public class Complex extends org.python.types.Object {
         throw new org.python.exceptions.TypeError("'complex' object is not subscriptable");
     }
 
-    @org.python.Method(
-            __doc__ = "Return self*value.",
-            args = {"other"}
-    )
-    public org.python.Object __mul__(org.python.Object other) {
+    private org.python.Object multiply(org.python.Object other, boolean inplace) {
         if (other instanceof org.python.types.List ||
             other instanceof org.python.types.Str ||
             other instanceof org.python.types.Tuple ||
             other instanceof org.python.types.Bytes ||
             other instanceof org.python.types.ByteArray) {
+            // TODO: These should be handled with sequences' __rmul__ instead.
             throw new org.python.exceptions.TypeError("can't multiply sequence by non-int of type 'complex'");
         } else if (other instanceof org.python.types.Bool) {
             if (!((org.python.types.Bool) other).value && !this.real.isNegativeZero()) {
@@ -392,8 +389,17 @@ public class Complex extends org.python.types.Object {
                     (org.python.types.Float) this.real.__mul__(c.imag).__add__(this.imag.__mul__(c.real)));
         }
         throw new org.python.exceptions.TypeError(String.format(
-                "unsupported operand type(s) for *: 'complex' and '%s'", other.typeName()
+                "unsupported operand type(s) for %s: 'complex' and '%s'",
+                inplace ? "*=" : "*", other.typeName()
         ));
+    }
+
+    @org.python.Method(
+            __doc__ = "Return self*value.",
+            args = {"other"}
+    )
+    public org.python.Object __mul__(org.python.Object other) {
+        return this.multiply(other, false);
     }
 
     private org.python.Object floatDivide(org.python.Object y, boolean inplace) {
@@ -712,6 +718,14 @@ public class Complex extends org.python.types.Object {
     )
     public org.python.Object __imod__(org.python.Object other) {
         throw new org.python.exceptions.TypeError("can't mod complex numbers.");
+    }
+
+    @org.python.Method(
+            __doc__ = "",
+            args = {"other"}
+    )
+    public org.python.Object __imul__(org.python.Object other) {
+        return this.multiply(other, true);
     }
 
     @org.python.Method(

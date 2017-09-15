@@ -68,16 +68,7 @@ class BinaryComplexOperationTests(BinaryOperationTestCase, TranspileTestCase):
 class InplaceComplexOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'complex'
 
-    not_implemented = [
-        'test_multiply_bytearray',
-        'test_multiply_bytes',
-        'test_multiply_list',
-        'test_multiply_str',
-        'test_multiply_tuple',
-    ]
-
     substitutions = {
-        # Floating point error fix for test_power_XXX.
         "(0.2205799751711092+0.9753688915243878j)": [
             "(0.22057997517110922+0.9753688915243878j)"
         ],
