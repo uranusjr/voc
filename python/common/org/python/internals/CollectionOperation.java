@@ -2,17 +2,14 @@ package org.python.internals;
 
 public class CollectionOperation {
 
-    public static java.util.Iterator<org.python.Object> getIterator(org.python.Object x) {
+    public static org.python.Object getIter(org.python.Object x) {
         try {
-            org.python.Object it = x.__iter__();
-            if (it instanceof org.python.types.Iterator) {
-                return ((org.python.types.Iterator) it).getIterator();
-            }
+            return x.__iter__();
         } catch (org.python.exceptions.AttributeError e) {
+            throw new org.python.exceptions.TypeError(String.format(
+                    "'%s' object is not iterable", x.typeName()
+            ));
         }
-        throw new org.python.exceptions.TypeError(String.format(
-                "'%s' object is not iterable", x.typeName()
-        ));
     }
 
     public static void addAll(org.python.java.Collection target, org.python.Object source) {
@@ -22,10 +19,14 @@ public class CollectionOperation {
             collection.addAll(((org.python.java.Collection) source).getCollection());
             return;
         }
-        // Standard implementation using the iterator implementation.
-        java.util.Iterator<org.python.Object> iterator = getIterator(source);
-        while (iterator.hasNext()) {
-            collection.add(iterator.next());
+        // Standard implementation using the iterator protocol.
+        org.python.Object it = getIter(source);
+        while (true) {
+            try {
+                collection.add(it.__next__());
+            } catch (org.python.exceptions.StopIteration si) {
+                return;
+            }
         }
     }
 

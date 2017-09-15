@@ -121,10 +121,15 @@ public class SetOperation {
     public static void different(java.util.Set<org.python.Object> set, org.python.Object y) {
         if (y instanceof org.python.java.Collection) {
             set.removeAll(((org.python.java.Collection) y).getCollection());
-        } else {
-            java.util.Iterator<org.python.Object> iterator = CollectionOperation.getIterator(y);
-            while (iterator.hasNext()) {
-                set.remove(iterator.next());
+            return;
+        }
+
+        org.python.Object iter = CollectionOperation.getIter(y);
+        while (true) {
+            try {
+                set.remove(iter.__next__());
+            } catch (org.python.exceptions.StopIteration si) {
+                break;
             }
         }
     }
@@ -139,11 +144,16 @@ public class SetOperation {
         java.util.Collection<org.python.Object> collection;
         if (y instanceof org.python.java.Collection) {
             collection = ((org.python.java.Collection) y).getCollection();
-        } else {
-            java.util.Iterator<org.python.Object> iterator = CollectionOperation.getIterator(y);
-            collection = new java.util.HashSet<org.python.Object>();
-            while (iterator.hasNext()) {
-                collection.add(iterator.next());
+            return;
+        }
+
+        org.python.Object iter = CollectionOperation.getIter(y);
+        collection = new java.util.HashSet<org.python.Object>();
+        while (true) {
+            try {
+                collection.add(iter.__next__());
+            } catch (org.python.exceptions.StopIteration si) {
+                break;
             }
         }
         set.retainAll(collection);
@@ -151,14 +161,19 @@ public class SetOperation {
 
     public static java.util.Set<org.python.Object> symmetricDifferent(org.python.java.Set x, org.python.Object y, boolean inplace) {
         java.util.Set<org.python.Object> set = getSet(x, inplace);
-        java.util.Iterator<org.python.Object> iterator = null;
+        org.python.Object iter = null;
         if (y instanceof org.python.java.Collection) {
-            iterator = ((org.python.java.Collection) y).getCollection().iterator();
+            iter = ((org.python.java.Collection) y).__iter__();
         } else {
-            iterator = CollectionOperation.getIterator(y);
+            iter = CollectionOperation.getIter(y);
         }
-        while (iterator.hasNext()) {
-            org.python.Object object = iterator.next();
+        while (true) {
+            org.python.Object object;
+            try {
+                object = iter.__next__();
+            } catch (org.python.exceptions.StopIteration si) {
+                break;
+            }
             if (set.contains(object)) {
                 set.remove(object);
             } else {
@@ -177,10 +192,14 @@ public class SetOperation {
     public static void unify(java.util.Set<org.python.Object> set, org.python.Object y) {
         if (y instanceof org.python.java.Collection) {
             set.addAll(((org.python.java.Collection) y).getCollection());
-        } else {
-            java.util.Iterator<org.python.Object> iterator = CollectionOperation.getIterator(y);
-            while (iterator.hasNext()) {
-                set.add(iterator.next());
+            return;
+        }
+        org.python.Object iter = CollectionOperation.getIter(y);
+        while (true) {
+            try {
+                set.add(iter.__next__());
+            } catch (org.python.exceptions.StopIteration si) {
+                break;
             }
         }
     }

@@ -261,9 +261,13 @@ public class FrozenSet extends org.python.types.Object implements org.python.jav
     )
     public org.python.Object intersection(org.python.types.Tuple others) {
         java.util.Set<org.python.Object> set = new java.util.HashSet<org.python.Object>(this.getSet());
-        java.util.Iterator<org.python.Object> iterator = ((org.python.types.Iterator) others.__iter__()).getIterator();
-        while (iterator.hasNext()) {
-            SetOperation.intersect(set, iterator.next());
+        org.python.Object iter = others.__iter__();
+        while (true) {
+            try {
+                SetOperation.intersect(set, iter.__next__());
+            } catch (org.python.exceptions.StopIteration si) {
+                break;
+            }
         }
         return new org.python.types.FrozenSet(set);
     }
@@ -285,9 +289,13 @@ public class FrozenSet extends org.python.types.Object implements org.python.jav
     )
     public org.python.Object difference(org.python.types.Tuple others) {
         java.util.Set<org.python.Object> set = new java.util.HashSet<org.python.Object>(this.getSet());
-        java.util.Iterator<org.python.Object> iterator = ((org.python.types.Iterator) others.__iter__()).getIterator();
-        while (iterator.hasNext()) {
-            SetOperation.different(set, iterator.next());
+        org.python.Object iter = others.__iter__();
+        while (true) {
+            try {
+                SetOperation.different(set, iter.__next__());
+            } catch (org.python.exceptions.StopIteration si) {
+                break;
+            }
         }
         return new org.python.types.FrozenSet(set);
     }
@@ -298,9 +306,13 @@ public class FrozenSet extends org.python.types.Object implements org.python.jav
     )
     public org.python.Object union(org.python.types.Tuple others) {
         java.util.Set<org.python.Object> set = new java.util.HashSet<org.python.Object>(this.getSet());
-        java.util.Iterator<org.python.Object> iterator = ((org.python.types.Iterator) others.__iter__()).getIterator();
-        while (iterator.hasNext()) {
-            SetOperation.unify(set, iterator.next());
+        org.python.Object iter = others.__iter__();
+        while (true) {
+            try {
+                SetOperation.unify(set, iter.__next__());
+            } catch (org.python.exceptions.StopIteration si) {
+                break;
+            }
         }
         return new org.python.types.FrozenSet(set);
     }
