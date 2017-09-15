@@ -1,9 +1,6 @@
 package org.python.types;
 
-import org.Python;
-
-import java.util.Collections;
-import java.util.Comparator;
+import org.python.internals.CollectionOperation;
 
 public class List extends org.python.types.Object implements org.python.java.Collection {
     public java.util.List<org.python.Object> value;
@@ -52,7 +49,7 @@ public class List extends org.python.types.Object implements org.python.java.Col
     public List(org.python.Object[] args, java.util.Map<java.lang.String, org.python.Object> kwargs) {
         this();
         if (args[0] != null) {
-            this.extend(args[0]);
+            CollectionOperation.addAll(this, args[0]);
         }
     }
 
@@ -83,7 +80,7 @@ public class List extends org.python.types.Object implements org.python.java.Col
             args = {"other"}
     )
     public org.python.Object __iadd__(org.python.Object other) {
-        this.extend(other);
+        CollectionOperation.addAll(this, other);
         return this;
     }
 
@@ -491,8 +488,10 @@ public class List extends org.python.types.Object implements org.python.java.Col
             result.value.addAll(((org.python.types.List) other).value);
             return result;
         } else {
-            throw new org.python.exceptions.TypeError(
-                    String.format("can only concatenate list (not \"%s\") to list", Python.typeName(other.getClass())));
+            throw new org.python.exceptions.TypeError(String.format(
+                    "can only concatenate list (not \"%s\") to list",
+                    other.typeName()
+            ));
         }
     }
 
@@ -595,27 +594,7 @@ public class List extends org.python.types.Object implements org.python.java.Col
             args = {"other"}
     )
     public org.python.Object extend(org.python.Object other) {
-        if (other instanceof org.python.java.Collection) {
-            // Optimization using the internal Java implementation.
-            this.value.addAll(((org.python.java.Collection) other).getCollection());
-        } else {
-            // Standard implementation using Python's iterable protocol.
-            // 1. Get an iterator for the iterable, raising exception on failure.
-            // 2. Walk through the iterator, adding each item.
-            org.python.Object it = null;
-            try {
-                it = other.__iter__();
-            } catch (org.python.exceptions.AttributeError ae) {
-                throw new org.python.exceptions.TypeError("'" + other.typeName() + "' object is not iterable");
-            }
-            while (true) {
-                try {
-                    this.value.add(it.__next__());
-                } catch (org.python.exceptions.StopIteration si) {
-                    break;
-                }
-            }
-        }
+        CollectionOperation.addAll(this, other);
         return org.python.types.NoneType.NONE;
     }
 
@@ -732,7 +711,7 @@ public class List extends org.python.types.Object implements org.python.java.Col
             __doc__ = "L.reverse() -> None -- reverse the elements of the L in place."
     )
     public org.python.Object reverse() {
-        Collections.reverse(this.value);
+        java.util.Collections.reverse(this.value);
         return org.python.types.NoneType.NONE;
     }
 
@@ -743,13 +722,13 @@ public class List extends org.python.types.Object implements org.python.java.Col
     )
     public org.python.Object sort(final org.python.Object key, org.python.Object reverse) {
         if (key == null && reverse == null) {
-            Collections.sort(this.value);
+            java.util.Collections.sort(this.value);
         } else {
             // needs to be final in order to use inside the comparator
             final boolean shouldReverse = reverse == null ? false :
                     ((org.python.types.Bool) reverse.__bool__()).value;
 
-            Collections.sort(this.value, new Comparator<org.python.Object>() {
+            java.util.Collections.sort(this.value, new java.util.Comparator<org.python.Object>() {
                 @Override
                 public int compare(org.python.Object o1, org.python.Object o2) {
                     org.python.Object val1 = o1;

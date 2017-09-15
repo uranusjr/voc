@@ -1,9 +1,16 @@
 package org.python.types;
 
-public class Set extends org.python.types.Object implements org.python.java.Collection {
+import org.python.internals.CollectionOperation;
+import org.python.internals.SetOperation;
+
+public class Set extends org.python.types.Object implements org.python.java.Set {
     public java.util.Set<org.python.Object> value;
 
     public java.util.Collection<org.python.Object> getCollection() {
+        return this.value;
+    }
+
+    public java.util.Set<org.python.Object> getSet() {
         return this.value;
     }
 
@@ -30,14 +37,13 @@ public class Set extends org.python.types.Object implements org.python.java.Coll
         throw new org.python.exceptions.AttributeError(this, "__hash__");
     }
 
-    public Set() {
-        super();
-        this.value = new java.util.HashSet<org.python.Object>();
-    }
-
     public Set(java.util.Set<org.python.Object> set) {
         super();
         this.value = set;
+    }
+
+    public Set() {
+        this(new java.util.HashSet<org.python.Object>());
     }
 
     @org.python.Method(
@@ -48,33 +54,9 @@ public class Set extends org.python.types.Object implements org.python.java.Coll
             default_args = {"iterable"}
     )
     public Set(org.python.Object[] args, java.util.Map<java.lang.String, org.python.Object> kwargs) {
-        if (args[0] == null) {
-            this.value = new java.util.HashSet<org.python.Object>();
-        } else {
-            if (args[0] instanceof org.python.types.Set) {
-                this.value = new java.util.HashSet<org.python.Object>(
-                        ((org.python.types.Set) args[0]).value
-                );
-            } else if (args[0] instanceof org.python.types.List) {
-                this.value = new java.util.HashSet<org.python.Object>(
-                        ((org.python.types.List) args[0]).value
-                );
-            } else if (args[0] instanceof org.python.types.Tuple) {
-                this.value = new java.util.HashSet<org.python.Object>(
-                        ((org.python.types.Tuple) args[0]).value
-                );
-            } else {
-                org.python.Object iterator = org.Python.iter(args[0]);
-                java.util.Set<org.python.Object> generated = new java.util.HashSet<org.python.Object>();
-                try {
-                    while (true) {
-                        org.python.Object next = iterator.__next__();
-                        generated.add(next);
-                    }
-                } catch (org.python.exceptions.StopIteration si) {
-                }
-                this.value = generated;
-            }
+        this();
+        if (args[0] != null){
+            CollectionOperation.addAll(this, args[0]);
         }
     }
 
@@ -133,14 +115,7 @@ public class Set extends org.python.types.Object implements org.python.java.Coll
             args = {"other"}
     )
     public org.python.Object __lt__(org.python.Object other) {
-        if (other instanceof org.python.types.Set) {
-            org.python.types.Set otherSet = (org.python.types.Set) other;
-            return new org.python.types.Bool(otherSet.value.containsAll(this.value) && !this.value.equals(otherSet.value));
-        } else if (other instanceof org.python.types.FrozenSet) {
-            org.python.types.FrozenSet otherSet = (org.python.types.FrozenSet) other;
-            return new org.python.types.Bool(otherSet.value.containsAll(this.value) && !this.value.equals(otherSet.value));
-        }
-        return org.python.types.NotImplementedType.NOT_IMPLEMENTED;
+        return SetOperation.lessThan(this, other);
     }
 
     @org.python.Method(
@@ -148,14 +123,7 @@ public class Set extends org.python.types.Object implements org.python.java.Coll
             args = {"other"}
     )
     public org.python.Object __le__(org.python.Object other) {
-        if (other instanceof org.python.types.Set) {
-            org.python.types.Set otherSet = (org.python.types.Set) other;
-            return new org.python.types.Bool(otherSet.value.containsAll(this.value));
-        } else if (other instanceof org.python.types.FrozenSet) {
-            org.python.types.FrozenSet otherSet = (org.python.types.FrozenSet) other;
-            return new org.python.types.Bool(otherSet.value.containsAll(this.value));
-        }
-        return org.python.types.NotImplementedType.NOT_IMPLEMENTED;
+        return SetOperation.lessThanOrEqual(this, other);
     }
 
     @org.python.Method(
@@ -163,14 +131,7 @@ public class Set extends org.python.types.Object implements org.python.java.Coll
             args = {"other"}
     )
     public org.python.Object __eq__(org.python.Object other) {
-        if (other instanceof org.python.types.Set) {
-            org.python.types.Set otherSet = (org.python.types.Set) other;
-            return new org.python.types.Bool(this.value.equals(otherSet.value));
-        } else if (other instanceof org.python.types.FrozenSet) {
-            org.python.types.FrozenSet otherSet = (org.python.types.FrozenSet) other;
-            return new org.python.types.Bool(this.value.equals(otherSet.value));
-        }
-        return org.python.types.NotImplementedType.NOT_IMPLEMENTED;
+        return SetOperation.equal(this, other);
     }
 
     @org.python.Method(
@@ -178,14 +139,7 @@ public class Set extends org.python.types.Object implements org.python.java.Coll
             args = {"other"}
     )
     public org.python.Object __gt__(org.python.Object other) {
-        if (other instanceof org.python.types.Set) {
-            org.python.types.Set otherSet = (org.python.types.Set) other;
-            return new org.python.types.Bool(this.value.containsAll(otherSet.value) && !this.value.equals(otherSet.value));
-        } else if (other instanceof org.python.types.FrozenSet) {
-            org.python.types.FrozenSet otherSet = (org.python.types.FrozenSet) other;
-            return new org.python.types.Bool(this.value.containsAll(otherSet.value) && !this.value.equals(otherSet.value));
-        }
-        return org.python.types.NotImplementedType.NOT_IMPLEMENTED;
+        return SetOperation.greaterThan(this, other);
     }
 
     @org.python.Method(
@@ -193,14 +147,7 @@ public class Set extends org.python.types.Object implements org.python.java.Coll
             args = {"other"}
     )
     public org.python.Object __ge__(org.python.Object other) {
-        if (other instanceof org.python.types.Set) {
-            org.python.types.Set otherSet = (org.python.types.Set) other;
-            return new org.python.types.Bool(this.value.containsAll(otherSet.value));
-        } else if (other instanceof org.python.types.FrozenSet) {
-            org.python.types.FrozenSet otherSet = (org.python.types.FrozenSet) other;
-            return new org.python.types.Bool(this.value.containsAll(otherSet.value));
-        }
-        return org.python.types.NotImplementedType.NOT_IMPLEMENTED;
+        return SetOperation.greaterThanOrEqual(this, other);
     }
 
     public boolean __setattr_null(java.lang.String name, org.python.Object value) {
@@ -291,67 +238,28 @@ public class Set extends org.python.types.Object implements org.python.java.Coll
             __doc__ = "Return self-value."
     )
     public org.python.Object __sub__(org.python.Object other) {
-        java.util.Set set = ((org.python.types.Set) this.copy()).value;
-        if (other instanceof org.python.types.Set) {
-            set.removeAll(((org.python.types.Set) other).value);
-            return new org.python.types.Set(set);
-        } else if (other instanceof org.python.types.FrozenSet) {
-            set.removeAll(((org.python.types.FrozenSet) other).value);
-            return new org.python.types.Set(set);
-        }
-        throw new org.python.exceptions.TypeError("unsupported operand type(s) for -: '" + this.typeName() + "' and '" + other.typeName() + "'");
+        return new org.python.types.Set(SetOperation.substract(this, other, false));
     }
 
     @org.python.Method(
             __doc__ = "Return self&value."
     )
     public org.python.Object __and__(org.python.Object other) {
-        java.util.Set set = ((org.python.types.Set) this.copy()).value;
-        if (other instanceof org.python.types.Set) {
-            set.retainAll(((org.python.types.Set) other).value);
-            return new org.python.types.Set(set);
-        } else if (other instanceof org.python.types.FrozenSet) {
-            set.retainAll(((org.python.types.FrozenSet) other).value);
-            return new org.python.types.Set(set);
-        }
-        throw new org.python.exceptions.TypeError("unsupported operand type(s) for &: '" + this.typeName() + "' and '" + other.typeName() + "'");
+        return new org.python.types.Set(SetOperation.and(this, other, false));
     }
 
     @org.python.Method(
             __doc__ = "Return self^value."
     )
     public org.python.Object __xor__(org.python.Object other) {
-        java.util.Set set = ((org.python.types.Set) this.copy()).value;
-        java.util.Set intersect_set = ((org.python.types.Set) this.copy()).value;
-        if (other instanceof org.python.types.Set) {
-            set.addAll(((org.python.types.Set) other).value);
-            intersect_set.retainAll(((org.python.types.Set) other).value);
-            // take away the intersection from the union for XOR
-            set.removeAll(intersect_set);
-            return new org.python.types.Set(set);
-        } else if (other instanceof org.python.types.FrozenSet) {
-            set.addAll(((org.python.types.FrozenSet) other).value);
-            intersect_set.retainAll(((org.python.types.FrozenSet) other).value);
-            // take away the intersection from the union for XOR
-            set.removeAll(intersect_set);
-            return new org.python.types.Set(set);
-        }
-        throw new org.python.exceptions.TypeError("unsupported operand type(s) for ^: '" + this.typeName() + "' and '" + other.typeName() + "'");
+        return new org.python.types.Set(SetOperation.exclusiveOr(this, other, false));
     }
 
     @org.python.Method(
             __doc__ = "Return self|value."
     )
     public org.python.Object __or__(org.python.Object other) {
-        java.util.Set set = ((org.python.types.Set) this.copy()).value;
-        if (other instanceof org.python.types.Set) {
-            set.addAll(((org.python.types.Set) other).value);
-            return new org.python.types.Set(set);
-        } else if (other instanceof org.python.types.FrozenSet) {
-            set.addAll(((org.python.types.FrozenSet) other).value);
-            return new org.python.types.Set(set);
-        }
-        throw new org.python.exceptions.TypeError("unsupported operand type(s) for |: '" + this.typeName() + "' and '" + other.typeName() + "'");
+        return new org.python.types.Set(SetOperation.or(this, other, false));
     }
 
     // @org.python.Method(
@@ -414,33 +322,6 @@ public class Set extends org.python.types.Object implements org.python.java.Coll
     }
 
     @org.python.Method(
-            __doc__ = "Return the difference of two or more sets as a new set.\n\n(i.e. all elements that are in this set but not the others.)",
-            args = {"other"}
-    )
-    public org.python.Object difference(org.python.Object other) {
-        try {
-            org.python.types.Set otherSet = null;
-            if (other instanceof org.python.types.Set) {
-                otherSet = (org.python.types.Set) other;
-            } else {
-                otherSet = new org.python.types.Set(new org.python.Object[] {other}, null);
-            }
-            return this.__sub__(otherSet);
-        } catch (org.python.exceptions.AttributeError e) {
-            throw new org.python.exceptions.TypeError("'" + other.typeName() + "' object is not iterable");
-        }
-    }
-
-    @org.python.Method(
-            __doc__ = "Remove all elements of another set from this set.",
-            args = {"other"}
-    )
-    public org.python.Object difference_update(org.python.Object other) {
-        this.value.removeAll(((Set) other).value);
-        return org.python.types.NoneType.NONE;
-    }
-
-    @org.python.Method(
             __doc__ = "Remove an element from a set if it is a member.\n\nIf the element is not a member, do nothing.",
             args = {"item"}
     )
@@ -451,20 +332,15 @@ public class Set extends org.python.types.Object implements org.python.java.Coll
 
     @org.python.Method(
             __doc__ = "Return the intersection of two sets as a new set.\n\n(i.e. all elements that are in both sets.)",
-            args = {"other"}
+            varargs = "others"
     )
-    public org.python.Object intersection(org.python.Object other) {
-        try {
-            org.python.types.Set otherSet = null;
-            if (other instanceof org.python.types.Set) {
-                otherSet = (org.python.types.Set) other;
-            } else {
-                otherSet = new org.python.types.Set(new org.python.Object[] {other}, null);
-            }
-            return this.__and__(otherSet);
-        } catch (org.python.exceptions.AttributeError e) {
-            throw new org.python.exceptions.TypeError("'" + other.typeName() + "' object is not iterable");
+    public org.python.Object intersection(org.python.types.Tuple others) {
+        java.util.Set<org.python.Object> set = new java.util.HashSet<org.python.Object>(this.getSet());
+        java.util.Iterator<org.python.Object> iterator = ((org.python.types.Iterator) others.__iter__()).getIterator();
+        while (iterator.hasNext()) {
+            SetOperation.intersect(set, iterator.next());
         }
+        return new org.python.types.Set(set);
     }
 
     @org.python.Method(
@@ -472,11 +348,32 @@ public class Set extends org.python.types.Object implements org.python.java.Coll
             args = {"other"}
     )
     public org.python.Object intersection_update(org.python.Object other) {
-        try {
-            this.value.retainAll(((Set) other).value);
-        } catch (ClassCastException te) {
-            throw new org.python.exceptions.TypeError("'" + other.typeName() + "' object is not iterable");
+        if (other != null) {
+            SetOperation.intersect(this, other, true);
         }
+        return org.python.types.NoneType.NONE;
+    }
+
+    @org.python.Method(
+            __doc__ = "Return a new set with elements in either the set or other but not both.",
+            default_args = {"other"}
+    )
+    public org.python.Object symmetric_difference(org.python.Object other) {
+        if (other == null) {    // CPython uses a message different from the default.
+            throw new org.python.exceptions.TypeError("symmetric_difference() takes exactly one argument (0 given)");
+        }
+        return new org.python.types.Set(SetOperation.symmetricDifferent(this, other, false));
+    }
+
+    @org.python.Method(
+            __doc__ = "Update the set, keeping only elements found in either set, but not in both.",
+            default_args = {"other"}
+    )
+    public org.python.Object symmetric_difference_update(org.python.Object other) {
+        if (other == null) {    // CPython uses a message different from the default.
+            throw new org.python.exceptions.TypeError("symmetric_difference_update() takes exactly one argument (0 given)");
+        }
+        SetOperation.symmetricDifferent(this, other, true);
         return org.python.types.NoneType.NONE;
     }
 
@@ -485,25 +382,7 @@ public class Set extends org.python.types.Object implements org.python.java.Coll
             default_args = {"other"}
     )
     public org.python.Object isdisjoint(org.python.Object other) {
-        if (other == null) {
-            throw new org.python.exceptions.TypeError("isdisjoint() takes exactly one argument (0 given)");
-        }
-        java.util.Set<org.python.Object> intersection = new java.util.HashSet<org.python.Object>(this.value);
-        try {
-            if (other instanceof org.python.types.Set) {
-                intersection.retainAll(((org.python.types.Set) other).value);
-            } else {
-                org.python.types.Set otherSet = null;
-                otherSet = new org.python.types.Set(new org.python.Object[] {other}, null);
-                intersection.retainAll(((org.python.types.Set) otherSet).value);
-            }
-        } catch (org.python.exceptions.AttributeError e) {
-            throw new org.python.exceptions.TypeError("'" + other.typeName() + "' object is not iterable");
-        }
-        if (intersection.size() == 0) {
-            return new org.python.types.Bool(true);
-        }
-        return new org.python.types.Bool(false);
+        return new org.python.types.Bool(SetOperation.intersect(this, other, false).isEmpty());
     }
 
     @org.python.Method(
@@ -511,17 +390,7 @@ public class Set extends org.python.types.Object implements org.python.java.Coll
             default_args = {"other"}
     )
     public org.python.Object issubset(org.python.Object other) {
-        try {
-            org.python.types.Set otherSet = null;
-            if (other instanceof org.python.types.Set) {
-                otherSet = (org.python.types.Set) other;
-            } else {
-                otherSet = new org.python.types.Set(new org.python.Object[] {other}, null);
-            }
-            return this.__le__(otherSet);
-        } catch (org.python.exceptions.AttributeError e) {
-            throw new org.python.exceptions.TypeError("'" + other.typeName() + "' object is not iterable");
-        }
+        return new org.python.types.Bool(SetOperation.different(this, other, false).isEmpty());
     }
 
     @org.python.Method(
@@ -529,17 +398,7 @@ public class Set extends org.python.types.Object implements org.python.java.Coll
             default_args = {"other"}
     )
     public org.python.Object issuperset(org.python.Object other) {
-        try {
-            org.python.types.Set otherSet = null;
-            if (other instanceof org.python.types.Set) {
-                otherSet = (org.python.types.Set) other;
-            } else {
-                otherSet = new org.python.types.Set(new org.python.Object[] {other}, null);
-            }
-            return this.__ge__(otherSet);
-        } catch (org.python.exceptions.AttributeError e) {
-            throw new org.python.exceptions.TypeError("'" + other.typeName() + "' object is not iterable");
-        }
+        return new org.python.types.Bool(SetOperation.unify(this, other, false).equals(this.value));
     }
 
     @org.python.Method(
@@ -570,53 +429,54 @@ public class Set extends org.python.types.Object implements org.python.java.Coll
     }
 
     @org.python.Method(
-            __doc__ = "Return a new set with elements in either the set or other but not both.",
-            default_args = {"other"}
+            __doc__ = "Return the difference of two or more sets as a new set.\n\n(i.e. all elements that are in this set but not the others.)",
+            varargs = "others"
     )
-    public org.python.Object symmetric_difference(org.python.Object other) {
-        if (other == null) {
-            throw new org.python.exceptions.TypeError("symmetric_difference() takes exactly one argument (0 given)");
+    public org.python.Object difference(org.python.types.Tuple others) {
+        java.util.Set<org.python.Object> set = new java.util.HashSet<org.python.Object>(this.value);
+        java.util.Iterator<org.python.Object> iterator = ((org.python.types.Iterator) others.__iter__()).getIterator();
+        while (iterator.hasNext()) {
+            SetOperation.different(set, iterator.next());
         }
-        Set union = (Set) (this.union(other));
-        Set intersection = (Set) (this.intersection(other));
-        return union.difference(intersection);
+        return new org.python.types.Set(set);
     }
 
     @org.python.Method(
-            __doc__ = "Update the set, keeping only elements found in either set, but not in both.",
-            default_args = {"other"}
+            __doc__ = "Remove all elements of another set from this set.",
+            varargs = "others"
     )
-    public org.python.Object symmetric_difference_update(org.python.Object other) {
-        if (other == null) {
-            throw new org.python.exceptions.TypeError("symmetric_difference_update() takes exactly one argument (0 given)");
+    public org.python.Object difference_update(org.python.types.Tuple others) {
+        java.util.Set<org.python.Object> set = this.value;
+        java.util.Iterator<org.python.Object> iterator = ((org.python.types.Iterator) others.__iter__()).getIterator();
+        while (iterator.hasNext()) {
+            SetOperation.different(set, iterator.next());
         }
-        Set union = (Set) (this.union(other));
-        Set intersection = (Set) (this.intersection(other));
-        union = (Set) union.difference(intersection);
-        this.value = union.value;
+        return org.python.types.NoneType.NONE;
+    }
+
+    @org.python.Method(
+            __doc__ = "Update a set with the union of itself and others.",
+            varargs = "others"
+    )
+    public org.python.Object update(org.python.types.Tuple others) {
+        java.util.Set<org.python.Object> set = this.value;
+        java.util.Iterator<org.python.Object> iterator = ((org.python.types.Iterator) others.__iter__()).getIterator();
+        while (iterator.hasNext()) {
+            SetOperation.unify(set, iterator.next());
+        }
         return org.python.types.NoneType.NONE;
     }
 
     @org.python.Method(
             __doc__ = "Return the union of sets as a new set.\n\n(i.e. all elements that are in either set.)",
-            args = {"other"}
+            varargs = "others"
     )
-    public org.python.Object union(org.python.Object other) {
-        java.util.Set set = ((Set) this.copy()).value;
-        try {
-            set.addAll(((Set) other).value);
-        } catch (ClassCastException te) {
-            throw new org.python.exceptions.TypeError("'" + other.typeName() + "' object is not iterable");
+    public org.python.Object union(org.python.types.Tuple others) {
+        java.util.Set<org.python.Object> set = new java.util.HashSet<org.python.Object>(this.value);
+        java.util.Iterator<org.python.Object> iterator = ((org.python.types.Iterator) others.__iter__()).getIterator();
+        while (iterator.hasNext()) {
+            SetOperation.unify(set, iterator.next());
         }
-        return new Set(set);
-    }
-
-    @org.python.Method(
-            __doc__ = "Update a set with the union of itself and others.",
-            args = {"other"}
-    )
-    public org.python.Object update(org.python.Object other) {
-        this.value.addAll(((Set) other).value);
-        return org.python.types.NoneType.NONE;
+        return new org.python.types.Set(set);
     }
 }
