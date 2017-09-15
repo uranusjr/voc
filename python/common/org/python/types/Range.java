@@ -232,12 +232,12 @@ public class Range extends org.python.types.Object {
         throw new org.python.exceptions.TypeError("unsupported operand type(s) for *: 'range' and '" + other.typeName() + "'");
     }
 
-    private class JavaInterator extends java.lang.Object implements java.util.Iterator<org.python.Object> {
+    private class JavaIterator extends java.lang.Object implements java.util.Iterator<org.python.Object> {
         private long index;
         private long stop;
         private long step;
 
-        public JavaInterator(long start, long stop, long step) {
+        public JavaIterator(long start, long stop, long step) {
             super();
             this.index = start;
             this.stop = stop;
@@ -261,13 +261,17 @@ public class Range extends org.python.types.Object {
             this.index += this.step;
             return result;
         }
+
+        public void remove() {
+            throw new java.lang.UnsupportedOperationException();
+        }
     }
 
     public class Iterator extends org.python.types.Iterator {
         public static final java.lang.String PYTHON_TYPE_NAME = "range_iterator";
 
         Iterator(long start, long stop, long step) {
-            this.iterator = new JavaInterator(start, stop, step);
+            this.iterator = new JavaIterator(start, stop, step);
         }
     }
 }
