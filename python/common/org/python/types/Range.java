@@ -55,7 +55,7 @@ public class Range extends org.python.types.Object {
             __doc__ = "Implement iter(self)."
     )
     public org.python.Object __iter__() {
-        return new RangeIterator(start, stop, step);
+        return new Iterator(start, stop, step);
     }
 
     @org.python.Method(
@@ -71,7 +71,7 @@ public class Range extends org.python.types.Object {
         long start = this.start + (n - 1) * this.step;
         long stop = this.start - this.step;
         long step = 0 - this.step;
-        return new RangeIterator(start, stop, step);
+        return new Iterator(start, stop, step);
     }
 
     @org.python.Method(
@@ -232,65 +232,42 @@ public class Range extends org.python.types.Object {
         throw new org.python.exceptions.TypeError("unsupported operand type(s) for *: 'range' and '" + other.typeName() + "'");
     }
 
-    public class RangeIterator extends org.python.types.Object implements org.python.Object {
-
-        public static final java.lang.String PYTHON_TYPE_NAME = "range_iterator";
-
+    private class JavaInterator extends java.lang.Object implements java.util.Iterator<org.python.Object> {
         private long index;
-
-        private long start;
         private long stop;
         private long step;
 
-        public RangeIterator(long start, long stop, long step) {
+        public JavaInterator(long start, long stop, long step) {
             super();
-            this.start = start;
+            this.index = start;
             this.stop = stop;
             this.step = step;
-            index = this.start;
         }
 
-        @org.python.Method(
-                 __doc__ = "Implement iter(self)."
-        )
-        public org.python.Object __iter__() {
-            return this;
-        }
-
-        @org.python.Method(
-                __doc__ = "Implement next(self)."
-        )
-        public org.python.Object __next__() {
+        public boolean hasNext() {
             if (this.step > 0 && this.index >= this.stop) {
-                throw new org.python.exceptions.StopIteration();
+                return false;
             } else if (this.step < 0 && this.index <= this.stop) {
-                throw new org.python.exceptions.StopIteration();
+                return false;
             }
+            return true;
+        }
 
+        public org.python.Object next() {
+            if (!this.hasNext()) {
+                throw new java.util.NoSuchElementException();
+            }
             org.python.Object result = new org.python.types.Int(this.index);
             this.index += this.step;
             return result;
         }
+    }
 
-        @org.python.Method(
-                __doc__ = ""
-        )
-        public org.python.Object __invert__() {
-            throw new org.python.exceptions.TypeError("bad operand type for unary ~: 'range'");
-        }
+    public class Iterator extends org.python.types.Iterator {
+        public static final java.lang.String PYTHON_TYPE_NAME = "range_iterator";
 
-        @org.python.Method(
-                __doc__ = ""
-        )
-        public org.python.Object __neg__() {
-            throw new org.python.exceptions.TypeError("bad operand type for unary -: 'range'");
-        }
-
-        @org.python.Method(
-                __doc__ = ""
-        )
-        public org.python.Object __pos__() {
-            throw new org.python.exceptions.TypeError("bad operand type for unary +: 'range'");
+        Iterator(long start, long stop, long step) {
+            this.iterator = new JavaInterator(start, stop, step);
         }
     }
 }

@@ -1,5 +1,6 @@
 package org.python.types;
 
+import org.python.internals.CollectionOperation;
 import org.python.internals.SetOperation;
 
 public class FrozenSet extends org.python.types.Object implements org.python.java.Set {
@@ -31,14 +32,13 @@ public class FrozenSet extends org.python.types.Object implements org.python.jav
         return this.value.hashCode();
     }
 
-    public FrozenSet() {
+    public FrozenSet(java.util.Set<org.python.Object> set) {
         super();
-        this.value = java.util.Collections.emptySet();
+        this.value = set;
     }
 
-    public FrozenSet(java.util.Set<org.python.Object> frozenSet) {
-        super();
-        this.value = java.util.Collections.unmodifiableSet(frozenSet);
+    public FrozenSet() {
+        this(new java.util.HashSet<org.python.Object>());
     }
 
     @org.python.Method(
@@ -49,35 +49,9 @@ public class FrozenSet extends org.python.types.Object implements org.python.jav
             default_args = {"iterable"}
     )
     public FrozenSet(org.python.Object[] args, java.util.Map<java.lang.String, org.python.Object> kwargs) {
-        if (args[0] == null) {
-            this.value = java.util.Collections.emptySet();
-        } else {
-            if (args[0] instanceof org.python.types.Set) {
-                this.value = java.util.Collections.unmodifiableSet(
-                        ((org.python.types.Set) args[0]).value
-                );
-            } else if (args[0] instanceof org.python.types.List) {
-                this.value = java.util.Collections.unmodifiableSet(
-                        new java.util.HashSet<org.python.Object>(
-                        ((org.python.types.List) args[0]).value)
-                );
-            } else if (args[0] instanceof org.python.types.Tuple) {
-                this.value = java.util.Collections.unmodifiableSet(
-                        new java.util.HashSet<org.python.Object>(
-                        ((org.python.types.Tuple) args[0]).value)
-                );
-            } else {
-                org.python.Object iterator = org.Python.iter(args[0]);
-                java.util.Set<org.python.Object> generated = new java.util.HashSet<org.python.Object>();
-                try {
-                    while (true) {
-                        org.python.Object next = iterator.__next__();
-                        generated.add(next);
-                    }
-                } catch (org.python.exceptions.StopIteration si) {
-                }
-                this.value = java.util.Collections.unmodifiableSet(generated);
-            }
+        this();
+        if (args[0] != null) {
+            CollectionOperation.addAll(this, args[0]);
         }
     }
 
@@ -132,23 +106,13 @@ public class FrozenSet extends org.python.types.Object implements org.python.jav
             __doc__ = "Return repr(self)."
     )
     public org.python.types.Str __repr__() {
-        // Representation of an empty set is different
-        if (this.value.size() == 0) {
+        if (this.value.isEmpty()) {
             return new org.python.types.Str("frozenset()");
         }
-
-        java.lang.StringBuilder buffer = new java.lang.StringBuilder("frozenset({");
-        boolean first = true;
-        for (org.python.Object obj : this.value) {
-            if (first) {
-                first = false;
-            } else {
-                buffer.append(", ");
-            }
-            buffer.append(obj.__repr__());
-        }
-        buffer.append("})");
-        return new org.python.types.Str(buffer.toString());
+        return new org.python.types.Str(String.format(
+            "frozenset({%s})",
+            CollectionOperation.formatCommaSeperatedRepr(this)
+        ));
     }
 
     @org.python.Method(

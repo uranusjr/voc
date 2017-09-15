@@ -4,12 +4,15 @@ public class CollectionOperation {
 
     public static java.util.Iterator<org.python.Object> getIterator(org.python.Object x) {
         try {
-            return ((org.python.types.Iterator) x.__iter__()).getIterator();
+            org.python.Object it = x.__iter__();
+            if (it instanceof org.python.types.Iterator) {
+                return ((org.python.types.Iterator) it).getIterator();
+            }
         } catch (org.python.exceptions.AttributeError e) {
-            throw new org.python.exceptions.TypeError(String.format(
-                "'%s' object is not iterable", x.typeName()
-            ));
         }
+        throw new org.python.exceptions.TypeError(String.format(
+                "'%s' object is not iterable", x.typeName()
+        ));
     }
 
     public static void addAll(org.python.java.Collection target, org.python.Object source) {
@@ -24,5 +27,18 @@ public class CollectionOperation {
         while (iterator.hasNext()) {
             collection.add(iterator.next());
         }
+    }
+
+    public static java.lang.String formatCommaSeperatedRepr(org.python.java.Collection x) {
+        java.lang.StringBuilder buffer = new java.lang.StringBuilder();
+        java.util.Iterator<org.python.Object> iterator = x.getCollection().iterator();
+        if (iterator.hasNext()) {
+            buffer.append(iterator.next().__repr__());
+        }
+        while (iterator.hasNext()) {
+            buffer.append(", ");
+            buffer.append(iterator.next().__repr__());
+        }
+        return buffer.toString();
     }
 }

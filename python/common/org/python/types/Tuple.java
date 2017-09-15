@@ -1,5 +1,7 @@
 package org.python.types;
 
+import org.python.internals.CollectionOperation;
+
 public class Tuple extends org.python.types.Object implements org.python.java.Collection {
     public java.util.List<org.python.Object> value;
 
@@ -25,14 +27,13 @@ public class Tuple extends org.python.types.Object implements org.python.java.Co
         return this.value.hashCode();
     }
 
-    public Tuple() {
-        super();
-        this.value = new java.util.ArrayList<org.python.Object>();
-    }
-
     public Tuple(java.util.List<org.python.Object> tuple) {
         super();
         this.value = tuple;
+    }
+
+    public Tuple() {
+        this(new java.util.ArrayList<org.python.Object>());
     }
 
     @org.python.Method(
@@ -42,7 +43,10 @@ public class Tuple extends org.python.types.Object implements org.python.java.Co
                     "If the argument is a tuple, the return value is the same object.\n"
     )
     public Tuple(org.python.Object[] args, java.util.Map<java.lang.String, org.python.Object> kwargs) {
-        throw new org.python.exceptions.NotImplementedError("Builtin function 'tuple' not implemented");
+        this();
+        if (args[0] != null) {
+            CollectionOperation.addAll(this, args[0]);
+        }
     }
 
     // public org.python.Object __new__() {
@@ -57,21 +61,12 @@ public class Tuple extends org.python.types.Object implements org.python.java.Co
             __doc__ = "Return repr(self)."
     )
     public org.python.types.Str __repr__() {
-        java.lang.StringBuilder buffer = new java.lang.StringBuilder("(");
-        boolean first = true;
-        for (org.python.Object obj : this.value) {
-            if (first) {
-                first = false;
-            } else {
-                buffer.append(", ");
-            }
-            buffer.append(obj.__repr__());
-        }
         if (this.value.size() == 1) {
-            buffer.append(",");
+            return new org.python.types.Str(String.format("(%s,)", this.value.get(0).__repr__()));
         }
-        buffer.append(")");
-        return new org.python.types.Str(buffer.toString());
+        return new org.python.types.Str(String.format(
+            "(%s)", CollectionOperation.formatCommaSeperatedRepr(this)
+        ));
     }
 
     @org.python.Method(
@@ -359,7 +354,7 @@ public class Tuple extends org.python.types.Object implements org.python.java.Co
             __doc__ = "Implement iter(self)."
     )
     public org.python.Object __iter__() {
-        return new org.python.types.Tuple_Iterator(this);
+        return new Iterator(this);
     }
 
     @org.python.Method(
@@ -494,5 +489,13 @@ public class Tuple extends org.python.types.Object implements org.python.java.Co
     public org.python.Object __round__(org.python.Object ndigits) {
 
         throw new org.python.exceptions.TypeError("type tuple doesn't define __round__ method");
+    }
+
+    public class Iterator extends org.python.types.Iterator {
+        public static final java.lang.String PYTHON_TYPE_NAME = "tuple_iterator";
+
+        public Iterator(org.python.types.Tuple tuple) {
+            this.iterator = tuple.value.iterator();
+        }
     }
 }

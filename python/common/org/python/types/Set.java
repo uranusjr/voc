@@ -72,23 +72,12 @@ public class Set extends org.python.types.Object implements org.python.java.Set 
             __doc__ = "Return repr(self)."
     )
     public org.python.types.Str __repr__() {
-        // Representation of an empty set is different
-        if (this.value.size() == 0) {
+        if (this.value.isEmpty()) {
             return new org.python.types.Str("set()");
         }
-
-        java.lang.StringBuilder buffer = new java.lang.StringBuilder("{");
-        boolean first = true;
-        for (org.python.Object obj : this.value) {
-            if (first) {
-                first = false;
-            } else {
-                buffer.append(", ");
-            }
-            buffer.append(obj.__repr__());
-        }
-        buffer.append("}");
-        return new org.python.types.Str(buffer.toString());
+        return new org.python.types.Str(String.format(
+            "{%s}", CollectionOperation.formatCommaSeperatedRepr(this)
+        ));
     }
 
     @org.python.Method(
@@ -201,7 +190,7 @@ public class Set extends org.python.types.Object implements org.python.java.Set 
             __doc__ = "Implement iter(self)."
     )
     public org.python.Object __iter__() {
-        return new org.python.types.Set_Iterator(this);
+        return new Iterator(this);
     }
 
     @org.python.Method(
@@ -478,5 +467,17 @@ public class Set extends org.python.types.Object implements org.python.java.Set 
             SetOperation.unify(set, iterator.next());
         }
         return new org.python.types.Set(set);
+    }
+
+    public class Iterator extends org.python.types.Iterator {
+        public static final java.lang.String PYTHON_TYPE_NAME = "set_iterator";
+
+        public Iterator(org.python.types.Set set) {
+            this.iterator = set.value.iterator();
+        }
+
+        public Iterator(org.python.types.FrozenSet set) {
+            this.iterator = set.value.iterator();
+        }
     }
 }

@@ -102,18 +102,9 @@ public class List extends org.python.types.Object implements org.python.java.Col
             __doc__ = "Return repr(self)."
     )
     public org.python.types.Str __repr__() {
-        java.lang.StringBuilder buffer = new java.lang.StringBuilder("[");
-        boolean first = true;
-        for (org.python.Object obj : this.value) {
-            if (first) {
-                first = false;
-            } else {
-                buffer.append(", ");
-            }
-            buffer.append(obj.__repr__());
-        }
-        buffer.append("]");
-        return new org.python.types.Str(buffer.toString());
+        return new org.python.types.Str(String.format(
+            "[%s]", CollectionOperation.formatCommaSeperatedRepr(this)
+        ));
     }
 
     @org.python.Method(
@@ -456,7 +447,7 @@ public class List extends org.python.types.Object implements org.python.java.Col
             __doc__ = "Implement iter(self)."
     )
     public org.python.Object __iter__() {
-        return new org.python.types.List_Iterator(this);
+        return new Iterator(this);
     }
 
     @org.python.Method(
@@ -466,7 +457,7 @@ public class List extends org.python.types.Object implements org.python.java.Col
                       "modify the original list."
     )
     public org.python.Object __reversed__() {
-        return new org.python.types.List_ReverseIterator(this);
+        return new ReverseIterator(this);
     }
 
     @org.python.Method(
@@ -749,5 +740,21 @@ public class List extends org.python.types.Object implements org.python.java.Col
     )
     public org.python.Object __round__(org.python.Object ndigits) {
         throw new org.python.exceptions.TypeError("type list doesn't define __round__ method");
+    }
+
+    public class Iterator extends org.python.types.Iterator {
+        public static final java.lang.String PYTHON_TYPE_NAME = "list_iterator";
+
+        public Iterator(org.python.types.List list) {
+            this.iterator = list.value.iterator();
+        }
+    }
+
+    public class ReverseIterator extends org.python.types.ReverseIterator {
+        public static final java.lang.String PYTHON_TYPE_NAME = "list_reverseiterator";
+
+        public ReverseIterator(org.python.types.List list) {
+            this.iterator = list.value.listIterator(list.value.size());
+        }
     }
 }

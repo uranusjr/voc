@@ -1,7 +1,7 @@
 package org.python.types;
 
 
-class ReverseIterator extends org.python.types.Object implements org.python.Object {
+class ReverseIterator extends org.python.types.Object {
     java.util.ListIterator<org.python.Object> iterator;
 
     public int hashCode() {
