@@ -3,17 +3,6 @@ package org.python.types;
 public class Str extends org.python.types.Object {
     public java.lang.String value;
 
-    /**
-     * A utility method to update the internal value of this object.
-     *
-     * Used by __i*__ operations to do an in-place operation.
-     * obj must be of type org.python.types.Str
-     */
-    void setValue(org.python.Object obj) {
-        this.value = ((org.python.types.Str) obj).value;
-
-    }
-
     public java.lang.Object toJava() {
         return this.value;
     }
@@ -461,8 +450,7 @@ public class Str extends org.python.types.Object {
             args = {"other"}
     )
     public org.python.Object __ipow__(org.python.Object other) {
-        this.setValue(this.__pow__(other, null));
-        return this;
+        return this.__pow__(other, null);
     }
 
     @org.python.Method(
@@ -514,8 +502,7 @@ public class Str extends org.python.types.Object {
             args = {"other"}
     )
     public org.python.Object __imul__(org.python.Object other) {
-        this.setValue(this.__mul__(other));
-        return this;
+        return this.__mul__(other);
     }
 
     @org.python.Method(
@@ -523,8 +510,7 @@ public class Str extends org.python.types.Object {
             args = {"other"}
     )
     public org.python.Object __imod__(org.python.Object other) {
-        this.setValue(this.__mod__(other));
-        return this;
+        return this.__mod__(other);
     }
 
     @org.python.Method(

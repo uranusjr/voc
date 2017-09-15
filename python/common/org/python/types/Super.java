@@ -4,17 +4,6 @@ public class Super implements org.python.Object {
     public org.python.types.Type klass;
     public org.python.Object instance;
 
-    /**
-     * A utility method to update the internal value of this object.
-     *
-     * Used by __i*__ operations to do an in-place operation.
-     * On a base object, it will always fail. Subclasses should override
-     * to provide the relevant assignment info.
-     */
-    void setValue(org.python.Object obj) {
-        throw new org.python.exceptions.RuntimeError("super object cannot be updated.");
-    }
-
     public java.lang.Object toJava() {
         return this;
     }
@@ -688,8 +677,7 @@ public class Super implements org.python.Object {
     )
     public org.python.Object __iadd__(org.python.Object other) {
         try {
-            this.setValue(this.__add__(other));
-            return this;
+            return this.__add__(other);
         } catch (org.python.exceptions.TypeError e) {
             throw new org.python.exceptions.TypeError("unsupported operand type(s) for +=: 'super()' and '" + other.typeName() + "'");
         }
@@ -713,8 +701,7 @@ public class Super implements org.python.Object {
     )
     public org.python.Object __imul__(org.python.Object other) {
         try {
-            this.setValue(this.__mul__(other));
-            return this;
+            return this.__mul__(other);
         } catch (org.python.exceptions.TypeError e) {
             throw new org.python.exceptions.TypeError("unsupported operand type(s) for *=: 'super()' and '" + other.typeName() + "'");
         }
@@ -726,8 +713,7 @@ public class Super implements org.python.Object {
     )
     public org.python.Object __itruediv__(org.python.Object other) {
         try {
-            this.setValue(this.__truediv__(other));
-            return this;
+            return this.__truediv__(other);
         } catch (org.python.exceptions.TypeError e) {
             throw new org.python.exceptions.TypeError("unsupported operand type(s) for /=: 'super()' and '" + other.typeName() + "'");
         }
@@ -739,8 +725,7 @@ public class Super implements org.python.Object {
     )
     public org.python.Object __ifloordiv__(org.python.Object other) {
         try {
-            this.setValue(this.__floordiv__(other));
-            return this;
+            return this.__floordiv__(other);
         } catch (org.python.exceptions.TypeError e) {
             throw new org.python.exceptions.TypeError("unsupported operand type(s) for //=: 'super()' and '" + other.typeName() + "'");
         }
@@ -752,8 +737,7 @@ public class Super implements org.python.Object {
     )
     public org.python.Object __imod__(org.python.Object other) {
         try {
-            this.setValue(this.__mod__(other));
-            return this;
+            return this.__mod__(other);
         } catch (org.python.exceptions.TypeError e) {
             throw new org.python.exceptions.TypeError("unsupported operand type(s) for %=: 'super()' and '" + other.typeName() + "'");
         }
@@ -765,8 +749,7 @@ public class Super implements org.python.Object {
     )
     public org.python.Object __idivmod__(org.python.Object other) {
         try {
-            this.setValue(this.__pow__(other, null));
-            return this;
+            return this.__pow__(other, null);
         } catch (org.python.exceptions.TypeError e) {
             throw new org.python.exceptions.TypeError("unsupported operand type(s) for //=: '" + this.typeName() + "' and '" + other.typeName() + "'");
         }
@@ -778,8 +761,7 @@ public class Super implements org.python.Object {
     )
     public org.python.Object __ipow__(org.python.Object other) {
         try {
-            this.setValue(this.__pow__(other, null));
-            return this;
+            return this.__pow__(other, null);
         } catch (org.python.exceptions.TypeError e) {
             throw new org.python.exceptions.TypeError("unsupported operand type(s) for **=: 'super()' and '" + other.typeName() + "'");
         }
@@ -791,8 +773,7 @@ public class Super implements org.python.Object {
     )
     public org.python.Object __ilshift__(org.python.Object other) {
         try {
-            this.setValue(this.__lshift__(other));
-            return this;
+            return this.__lshift__(other);
         } catch (org.python.exceptions.TypeError e) {
             throw new org.python.exceptions.TypeError("unsupported operand type(s) for <<=: 'super()' and '" + other.typeName() + "'");
         }
@@ -804,8 +785,7 @@ public class Super implements org.python.Object {
     )
     public org.python.Object __irshift__(org.python.Object other) {
         try {
-            this.setValue(this.__rshift__(other));
-            return this;
+            return this.__rshift__(other);
         } catch (org.python.exceptions.TypeError e) {
             throw new org.python.exceptions.TypeError("unsupported operand type(s) for >>=: 'super()' and '" + other.typeName() + "'");
         }
@@ -829,8 +809,7 @@ public class Super implements org.python.Object {
     )
     public org.python.Object __ixor__(org.python.Object other) {
         try {
-            this.setValue(this.__xor__(other));
-            return this;
+            return this.__xor__(other);
         } catch (org.python.exceptions.TypeError e) {
             throw new org.python.exceptions.TypeError("unsupported operand type(s) for ^=: 'super()' and '" + other.typeName() + "'");
         }

@@ -9,16 +9,6 @@ public class ByteArray extends org.python.types.Object implements org.python.jav
         return this.value;
     }
 
-    /**
-     * A utility method to update the internal value of this object.
-     *
-     * Used by __i*__ operations to do an in-place operation.
-     * obj must be of type org.python.types.ByteArray
-     */
-    void setValue(org.python.Object obj) {
-        this.value = ((org.python.types.ByteArray) obj).value;
-    }
-
     public int hashCode() {
         return this.value.hashCode();
     }

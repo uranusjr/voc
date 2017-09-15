@@ -9,16 +9,6 @@ public class Tuple extends org.python.types.Object implements org.python.java.Co
         return this.value;
     }
 
-    /**
-     * A utility method to update the internal value of this object.
-     * <p>
-     * Used by __i*__ operations to do an in-place operation.
-     * obj must be of type org.python.types.Tuple
-     */
-    void setValue(org.python.Object obj) {
-        this.value = ((org.python.types.Tuple) obj).value;
-    }
-
     public java.lang.Object toJava() {
         return this.value;
     }

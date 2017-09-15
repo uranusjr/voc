@@ -14,16 +14,6 @@ public class Set extends org.python.types.Object implements org.python.java.Set 
         return this.value;
     }
 
-    /**
-     * A utility method to update the internal value of this object.
-     *
-     * Used by __i*__ operations to do an in-place operation.
-     * obj must be of type org.python.types.Set
-     */
-    void setValue(org.python.Object obj) {
-        this.value = ((org.python.types.Set) obj).value;
-    }
-
     public java.lang.Object toJava() {
         return this.value;
     }
