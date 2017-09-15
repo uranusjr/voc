@@ -78,7 +78,7 @@ public class FrozenSet extends org.python.types.Object implements org.python.jav
             __doc__ = "Implement iter(self)."
     )
     public org.python.Object __iter__() {
-        return new org.python.types.Set_Iterator(this);
+        return new org.python.types.Set.Iterator(this);
     }
 
     @org.python.Method(

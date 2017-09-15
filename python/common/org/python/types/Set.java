@@ -489,7 +489,7 @@ public class Set extends org.python.types.Object implements org.python.java.Set 
         return new org.python.types.Set(set);
     }
 
-    public class Iterator extends org.python.types.Iterator {
+    public static class Iterator extends org.python.types.Iterator {
         public static final java.lang.String PYTHON_TYPE_NAME = "set_iterator";
 
         public Iterator(org.python.types.Set set) {
