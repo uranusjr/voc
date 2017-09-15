@@ -144,16 +144,15 @@ public class SetOperation {
         java.util.Collection<org.python.Object> collection;
         if (y instanceof org.python.java.Collection) {
             collection = ((org.python.java.Collection) y).getCollection();
-            return;
-        }
-
-        org.python.Object iter = CollectionOperation.getIter(y);
-        collection = new java.util.HashSet<org.python.Object>();
-        while (true) {
-            try {
-                collection.add(iter.__next__());
-            } catch (org.python.exceptions.StopIteration si) {
-                break;
+        } else {
+            org.python.Object iter = CollectionOperation.getIter(y);
+            collection = new java.util.HashSet<org.python.Object>();
+            while (true) {
+                try {
+                    collection.add(iter.__next__());
+                } catch (org.python.exceptions.StopIteration si) {
+                    break;
+                }
             }
         }
         set.retainAll(collection);
