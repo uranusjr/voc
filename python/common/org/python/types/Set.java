@@ -45,7 +45,7 @@ public class Set extends org.python.types.Object implements org.python.java.Set 
     )
     public Set(org.python.Object[] args, java.util.Map<java.lang.String, org.python.Object> kwargs) {
         this();
-        if (args[0] != null){
+        if (args[0] != null) {
             CollectionOperation.addAll(this, args[0]);
         }
     }

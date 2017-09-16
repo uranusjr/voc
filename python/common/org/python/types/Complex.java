@@ -337,10 +337,10 @@ public class Complex extends org.python.types.Object {
 
     private org.python.Object multiply(org.python.Object other, boolean inplace) {
         if (other instanceof org.python.types.List ||
-            other instanceof org.python.types.Str ||
-            other instanceof org.python.types.Tuple ||
-            other instanceof org.python.types.Bytes ||
-            other instanceof org.python.types.ByteArray) {
+                other instanceof org.python.types.Str ||
+                other instanceof org.python.types.Tuple ||
+                other instanceof org.python.types.Bytes ||
+                other instanceof org.python.types.ByteArray) {
             // TODO: These should be handled with sequences' __rmul__ instead.
             throw new org.python.exceptions.TypeError("can't multiply sequence by non-int of type 'complex'");
         } else if (other instanceof org.python.types.Bool) {
@@ -404,7 +404,7 @@ public class Complex extends org.python.types.Object {
 
     private org.python.Object floatDivide(org.python.Object y, boolean inplace) {
         if (y instanceof org.python.java.Integer ||
-            y instanceof org.python.types.Float) {
+                y instanceof org.python.types.Float) {
             if (y.__bool__().equals(org.python.types.Bool.FALSE)) {
                 throw new org.python.exceptions.ZeroDivisionError("complex division by zero");
             }
