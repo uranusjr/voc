@@ -235,13 +235,13 @@ public class Tuple extends org.python.types.Object implements org.python.java.Li
     )
     public org.python.Object __add__(org.python.Object other) {
         if (other instanceof org.python.types.Tuple) {
-            org.python.types.Tuple result = new org.python.types.Tuple();
-            result.value.addAll(this.value);
-            result.value.addAll(((org.python.types.Tuple) other).value);
+            org.python.types.Tuple result = new org.python.types.Tuple(this.value);
+            result.getList().addAll(((org.python.types.Tuple) other).value);
             return result;
         } else {
-            throw new org.python.exceptions.TypeError(
-                    String.format("can only concatenate tuple (not \"%s\") to tuple", org.Python.typeName(other.getClass())));
+            throw new org.python.exceptions.TypeError(String.format(
+                    "can only concatenate tuple (not \"%s\") to tuple", other.typeName()
+            ));
         }
     }
 

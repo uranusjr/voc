@@ -51,7 +51,8 @@ public class Dict extends org.python.types.Object implements org.python.java.Col
                 );
             } else {
                 org.python.Object iterator = org.Python.iter(args[0]);
-                java.util.Map<org.python.Object, org.python.Object> generated = new java.util.HashMap<org.python.Object, org.python.Object>();
+                java.util.Map<org.python.Object, org.python.Object> generated =
+                        new java.util.HashMap<org.python.Object, org.python.Object>();
                 try {
                     while (true) {
                         org.python.Object next = iterator.__next__();
@@ -218,14 +219,12 @@ public class Dict extends org.python.types.Object implements org.python.java.Col
             args = {"other"}
     )
     public org.python.Object __mul__(org.python.Object other) {
-        if (other instanceof org.python.types.List) {
-            throw new org.python.exceptions.TypeError("can't multiply sequence by non-int of type '" + this.typeName() + "'");
-        } else if (other instanceof org.python.types.Tuple) {
-            throw new org.python.exceptions.TypeError("can't multiply sequence by non-int of type '" + this.typeName() + "'");
-        } else if (other instanceof org.python.types.Str) {
-            throw new org.python.exceptions.TypeError("can't multiply sequence by non-int of type '" + this.typeName() + "'");
-        } else if (other instanceof org.python.types.Bytes) {
-            throw new org.python.exceptions.TypeError("can't multiply sequence by non-int of type '" + this.typeName() + "'");
+        if (other instanceof org.python.types.List ||
+                other instanceof org.python.types.Tuple ||
+                other instanceof org.python.types.Str ||
+                other instanceof org.python.types.Bytes) {
+            throw new org.python.exceptions.TypeError(
+                    "can't multiply sequence by non-int of type '" + this.typeName() + "'");
         }
         return super.__mul__(other);
     }
@@ -416,7 +415,8 @@ public class Dict extends org.python.types.Object implements org.python.java.Col
     }
 
     @org.python.Method(
-            __doc__ = "D.pop(k[,d]) -> v, remove specified key and return the corresponding value.\nIf key is not found, d is returned if given, otherwise KeyError is raised",
+            __doc__ = "D.pop(k[,d]) -> v, remove specified key and return the corresponding value.\n" +
+                      "If key is not found, d is returned if given, otherwise KeyError is raised",
             args = {"k"},
             default_args = {"d"}
     )
@@ -466,7 +466,10 @@ public class Dict extends org.python.types.Object implements org.python.java.Col
     }
 
     @org.python.Method(
-            __doc__ = "D.update([E, ]**F) -> None.  Update D from dict/iterable E and F.\nIf E is present and has a .keys() method, then does:  for k in E: D[k] = E[k]\nIf E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v\nIn either case, this is followed by: for k in F:  D[k] = F[k]"
+            __doc__ = "D.update([E, ]**F) -> None.  Update D from dict/iterable E and F.\n" +
+                      "If E is present and has a .keys() method, then does:  for k in E: D[k] = E[k]\n" +
+                      "If E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v\n" +
+                      "In either case, this is followed by: for k in F:  D[k] = F[k]"
     )
     public org.python.Object update(org.python.Object other) {
         throw new org.python.exceptions.NotImplementedError("dict.update() has not been implemented.");
