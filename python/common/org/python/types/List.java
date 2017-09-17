@@ -2,10 +2,14 @@ package org.python.types;
 
 import org.python.internals.CollectionOperation;
 
-public class List extends org.python.types.Object implements org.python.java.Collection {
+public class List extends org.python.types.Object implements org.python.java.List {
     public java.util.List<org.python.Object> value;
 
     public java.util.Collection<org.python.Object> getCollection() {
+        return this.value;
+    }
+
+    public java.util.List<org.python.Object> getList() {
         return this.value;
     }
 
@@ -110,32 +114,9 @@ public class List extends org.python.types.Object implements org.python.java.Col
     )
     public org.python.Object __lt__(org.python.Object other) {
         if (other instanceof org.python.types.List) {
-            org.python.types.List otherList = (org.python.types.List) other;
-            int size = this.value.size();
-            int otherSize = otherList.value.size();
-            int count = Math.min(size, otherSize);
-
-            // check how many items are identical on the lists
-            int i = 0;
-            for (i = 0; i < count; i++) {
-                org.python.types.Bool result = (org.python.types.Bool) org.python.types.Object.__cmp_bool__(
-                        this.value.get(i), otherList.value.get(i), org.python.types.Object.CMP_OP.EQ);
-                if (!result.value) {
-                    break;
-                }
-            }
-
-            // not all items were identical, result is that of the first non-identical item
-            if (i < count) {
-                return org.python.types.Object.__cmp_bool__(this.value.get(i), otherList.value.get(i),
-                        org.python.types.Object.CMP_OP.LT);
-            }
-
-            // all items were identical, break tie by size
-            return new org.python.types.Bool(size < otherSize);
-        } else {
-            return org.python.types.NotImplementedType.NOT_IMPLEMENTED;
+            return CollectionOperation.lessThan(this, other);
         }
+        return org.python.types.NotImplementedType.NOT_IMPLEMENTED;
     }
 
     @org.python.Method(
@@ -144,32 +125,9 @@ public class List extends org.python.types.Object implements org.python.java.Col
     )
     public org.python.Object __le__(org.python.Object other) {
         if (other instanceof org.python.types.List) {
-            org.python.types.List otherList = (org.python.types.List) other;
-            int size = this.value.size();
-            int otherSize = otherList.value.size();
-            int count = Math.min(size, otherSize);
-
-            // check how many items are identical on the lists
-            int i = 0;
-            for (i = 0; i < count; i++) {
-                org.python.types.Bool result = (org.python.types.Bool) org.python.types.Object.__cmp_bool__(
-                        this.value.get(i), otherList.value.get(i), org.python.types.Object.CMP_OP.EQ);
-                if (!result.value) {
-                    break;
-                }
-            }
-
-            // not all items were identical, result is that of the first non-identical item
-            if (i < count) {
-                return org.python.types.Object.__cmp_bool__(this.value.get(i), otherList.value.get(i),
-                        org.python.types.Object.CMP_OP.LE);
-            }
-
-            // all items were identical, break tie by size
-            return new org.python.types.Bool(size <= otherSize);
-        } else {
-            return org.python.types.NotImplementedType.NOT_IMPLEMENTED;
+            return CollectionOperation.lessThanOrEqual(this, other);
         }
+        return org.python.types.NotImplementedType.NOT_IMPLEMENTED;
     }
 
     @org.python.Method(
@@ -178,8 +136,7 @@ public class List extends org.python.types.Object implements org.python.java.Col
     )
     public org.python.Object __eq__(org.python.Object other) {
         if (other instanceof org.python.types.List) {
-            org.python.types.List otherList = (org.python.types.List) other;
-            return new org.python.types.Bool(this.value.equals(otherList.value));
+            return CollectionOperation.equal(this, other);
         }
         return org.python.types.NotImplementedType.NOT_IMPLEMENTED;
     }
@@ -190,32 +147,9 @@ public class List extends org.python.types.Object implements org.python.java.Col
     )
     public org.python.Object __gt__(org.python.Object other) {
         if (other instanceof org.python.types.List) {
-            org.python.types.List otherList = (org.python.types.List) other;
-            int size = this.value.size();
-            int otherSize = otherList.value.size();
-            int count = Math.min(size, otherSize);
-
-            // check how many items are identical on the lists
-            int i = 0;
-            for (i = 0; i < count; i++) {
-                org.python.types.Bool result = (org.python.types.Bool) org.python.types.Object.__cmp_bool__(
-                        this.value.get(i), otherList.value.get(i), org.python.types.Object.CMP_OP.EQ);
-                if (!result.value) {
-                    break;
-                }
-            }
-
-            // not all items were identical, result is that of the first non-identical item
-            if (i < count) {
-                return org.python.types.Object.__cmp_bool__(this.value.get(i), otherList.value.get(i),
-                        org.python.types.Object.CMP_OP.GT);
-            }
-
-            // all items were identical, break tie by size
-            return new org.python.types.Bool(size > otherSize);
-        } else {
-            return org.python.types.NotImplementedType.NOT_IMPLEMENTED;
+            return CollectionOperation.greaterThan(this, other);
         }
+        return org.python.types.NotImplementedType.NOT_IMPLEMENTED;
     }
 
     @org.python.Method(
@@ -224,32 +158,9 @@ public class List extends org.python.types.Object implements org.python.java.Col
     )
     public org.python.Object __ge__(org.python.Object other) {
         if (other instanceof org.python.types.List) {
-            org.python.types.List otherList = (org.python.types.List) other;
-            int size = this.value.size();
-            int otherSize = otherList.value.size();
-            int count = Math.min(size, otherSize);
-
-            // check how many items are identical on the lists
-            int i = 0;
-            for (i = 0; i < count; i++) {
-                org.python.types.Bool result = (org.python.types.Bool) org.python.types.Object.__cmp_bool__(
-                        this.value.get(i), otherList.value.get(i), org.python.types.Object.CMP_OP.EQ);
-                if (!result.value) {
-                    break;
-                }
-            }
-
-            // not all items were identical, result is that of the first non-identical item
-            if (i < count) {
-                return org.python.types.Object.__cmp_bool__(this.value.get(i), otherList.value.get(i),
-                        org.python.types.Object.CMP_OP.GE);
-            }
-
-            // all items were identical, break tie by size
-            return new org.python.types.Bool(size >= otherSize);
-        } else {
-            return org.python.types.NotImplementedType.NOT_IMPLEMENTED;
+            return CollectionOperation.greaterThanOrEqual(this, other);
         }
+        return org.python.types.NotImplementedType.NOT_IMPLEMENTED;
     }
 
     public boolean __setattr_null(java.lang.String name, org.python.Object value) {
@@ -269,100 +180,22 @@ public class List extends org.python.types.Object implements org.python.java.Col
             args = {"index"}
     )
     public org.python.Object __getitem__(org.python.Object index) {
-        try {
-            if (index instanceof org.python.types.Slice) {
-                org.python.types.Slice.ValidatedValue slice = ((org.python.types.Slice) index).validateValueTypes();
-                java.util.List<org.python.Object> sliced = new java.util.ArrayList<org.python.Object>();
+        if (index instanceof org.python.types.Slice) {
+            return new org.python.types.List(CollectionOperation.getSlice(this, index));
+        } else if (index instanceof org.python.java.Integer) {
+            return CollectionOperation.getAtIndex(this, index);
+        }
 
-                if (slice.start == null && slice.stop == null && slice.step == null) {
-                    sliced.addAll(this.value);
-                } else {
-                    long step;
-                    if (slice.step != null) {
-                        step = slice.step.value;
-                    } else {
-                        step = 1;
-                    }
-
-                    if (step < 0) {
-                        long start;
-                        if (slice.start != null) {
-                            if (slice.start.value < 0) {
-                                start = Math.max((this.value.size() + slice.start.value), -1);
-                            } else {
-                                start = Math.min(slice.start.value, this.value.size() - 1);
-                            }
-                        } else {
-                            start = this.value.size() - 1;
-                        }
-
-                        long stop;
-                        if (slice.stop != null) {
-                            if (slice.stop.value < 0) {
-                                stop = Math.max((this.value.size() + slice.stop.value), 0);
-                            } else {
-                                stop = Math.min(slice.stop.value, this.value.size());
-                            }
-                        } else {
-                            stop = -1;
-                        }
-                        for (long i = start; i > stop; i += step) {
-                            sliced.add(this.value.get((int) i));
-                        }
-                    } else {
-                        long start;
-                        if (slice.start != null) {
-                            if (slice.start.value < 0) {
-                                start = Math.max((this.value.size() + slice.start.value), 0);
-                            } else {
-                                start = Math.min(slice.start.value, this.value.size());
-                            }
-                        } else {
-                            start = 0;
-                        }
-
-                        long stop;
-                        if (slice.stop != null) {
-                            if (slice.stop.value < 0) {
-                                stop = Math.max((this.value.size() + slice.stop.value), 0);
-                            } else {
-                                stop = Math.min(slice.stop.value, this.value.size());
-                            }
-                        } else {
-                            stop = this.value.size();
-                        }
-                        for (long i = start; i < stop; i += step) {
-                            sliced.add(this.value.get((int) i));
-                        }
-                    }
-                }
-                return new org.python.types.List(sliced);
-            } else {
-                int idx = (int) ((org.python.types.Int) index).value;
-                if (idx < 0) {
-                    if (-idx > this.value.size()) {
-                        throw new org.python.exceptions.IndexError("list index out of range");
-                    } else {
-                        return this.value.get(this.value.size() + idx);
-                    }
-                } else {
-                    if (idx >= this.value.size()) {
-                        throw new org.python.exceptions.IndexError("list index out of range");
-                    } else {
-                        return this.value.get(idx);
-                    }
-                }
-            }
-        } catch (ClassCastException e) {
-            if (org.Python.VERSION < 0x03050000) {
-                throw new org.python.exceptions.TypeError(
-                        "list indices must be integers, not " + index.typeName()
-                );
-            } else {
-                throw new org.python.exceptions.TypeError(
-                        "list indices must be integers or slices, not " + index.typeName()
-                );
-            }
+        if (org.Python.VERSION < 0x03050000) {
+            throw new org.python.exceptions.TypeError(String.format(
+                    "list indices must be integers, not %s",
+                    index.typeName()
+            ));
+        } else {
+            throw new org.python.exceptions.TypeError(String.format(
+                    "list indices must be integers or slices, not %s",
+                    index.typeName()
+            ));
         }
     }
 
