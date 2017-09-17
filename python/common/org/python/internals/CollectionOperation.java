@@ -135,4 +135,53 @@ public class CollectionOperation {
         }
         return sliced;
     }
+
+    public static int getIndexValue(org.python.java.List x, org.python.Object index, int defaultValue, boolean wrap) {
+        if (index == null) {
+            return defaultValue;
+        }
+        if (index instanceof org.python.java.Integer) {
+            int i = (int) ((org.python.java.Integer) index).getInteger();
+            int size = x.getCollection().size();
+            if (i < 0) {
+                return wrap ? Math.max(0, Math.min(size, size + i)) : 0;
+            }
+            return Math.min(size, i);
+        }
+
+        if (org.Python.VERSION < 0x03050000) {
+            throw new org.python.exceptions.TypeError(String.format(
+                    "%s indices must be integers, not ",
+                    x.typeName(), index.typeName()
+            ));
+        } else {
+            throw new org.python.exceptions.TypeError(String.format(
+                    "%s indices must be integers or slices, not ",
+                    x.typeName(), index.typeName()
+            ));
+        }
+    }
+
+    public static org.python.Object getFirstIndexOf(
+            org.python.java.List x, org.python.Object item, int start, int end) {
+        java.util.ListIterator<org.python.Object> iterator = x.getList().listIterator();
+
+        // Skip items.
+        for (int skip = 0; skip < start && iterator.hasNext(); skip++) {
+            iterator.next();
+        }
+
+        // Find matching item and return its index.
+        int counter = end - start;
+        while (counter > 0 && iterator.hasNext()) {
+            org.python.Object current = iterator.next();
+            org.python.Object eq = item.__eq__(current);
+            if (eq instanceof org.python.types.Bool && ((org.python.types.Bool) eq).getInteger() != 0) {
+                return new org.python.types.Int(iterator.previousIndex());
+            }
+            counter--;
+        }
+
+        return null;
+    }
 }

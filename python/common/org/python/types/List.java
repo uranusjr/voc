@@ -425,44 +425,17 @@ public class List extends org.python.types.Object implements org.python.java.Lis
             default_args = {"start", "end"}
     )
     public org.python.Object index(org.python.Object item, org.python.Object start, org.python.Object end) {
-        if (start != null && !(start instanceof org.python.types.Int)) {
-            if (org.Python.VERSION < 0x03050000) {
-                throw new org.python.exceptions.TypeError(
-                        "list indices must be integers, not " + start.typeName()
-                );
-            } else {
-                throw new org.python.exceptions.TypeError(
-                        "list indices must be integers or slices, not " + start.typeName()
-                );
-            }
+        org.python.Object index = CollectionOperation.getFirstIndexOf(
+                this, item,
+                CollectionOperation.getIndexValue(this, start, 0, false),
+                CollectionOperation.getIndexValue(this, end, this.value.size(), true)
+        );
+        if (index == null) {
+            throw new org.python.exceptions.ValueError(String.format(
+                    "%d is not in list", ((org.python.types.Int) item).value)
+            );
         }
-        if (end != null && !(end instanceof org.python.types.Int)) {
-            if (org.Python.VERSION < 0x03050000) {
-                throw new org.python.exceptions.TypeError(
-                        "list indices must be integers, not " + end.typeName()
-                );
-            } else {
-                throw new org.python.exceptions.TypeError(
-                        "list indices must be integers or slices, not " + end.typeName()
-                );
-            }
-        }
-
-        int iStart = 0, iEnd = this.value.size();
-        if (end != null) {
-            iEnd = toPositiveIndex(((Long) end.toJava()).intValue());
-        }
-        if (start != null) {
-            iStart = toPositiveIndex(((Long) start.toJava()).intValue());
-        }
-
-        for (int i = iStart; i < Math.min(iEnd, this.value.size()); i++) {
-            if (((org.python.types.Bool) org.python.types.Object.__cmp_bool__(
-                    item, this.value.get(i), org.python.types.Object.CMP_OP.EQ)).value) {
-                return new org.python.types.Int(i);
-            }
-        }
-        throw new org.python.exceptions.ValueError(String.format("%d is not in list", ((org.python.types.Int) item).value));
+        return index;
     }
 
     @org.python.Method(

@@ -313,38 +313,18 @@ public class Tuple extends org.python.types.Object implements org.python.java.Li
             default_args = {"item", "start", "end"}
     )
     public org.python.Object index(org.python.Object item, org.python.Object start, org.python.Object end) {
-        if (item == null) {
+        if (item == null) {     // Different error message from default.
             throw new org.python.exceptions.TypeError("index() takes at least 1 argument (0 given)");
         }
-        long st, en;
-        if (start == null || (((org.python.types.Int) start).value + (this.value).size() < 0)) {
-            st = 0;
-        } else if (((org.python.types.Int) start).value < 0) {
-            st = (this.value).size() + ((org.python.types.Int) start).value;
-        } else if (((org.python.types.Int) start).value >= (this.value).size()) {
-            st = (this.value).size();
-        } else {
-            st = ((org.python.types.Int) start).value;
+        org.python.Object index = CollectionOperation.getFirstIndexOf(
+                this, item,
+                CollectionOperation.getIndexValue(this, start, 0, false),
+                CollectionOperation.getIndexValue(this, end, this.value.size(), true)
+        );
+        if (index == null) {
+            throw new org.python.exceptions.ValueError("tuple.index(x): x not in tuple");
         }
-        if (end == null || ((org.python.types.Int) end).value >= (this.value).size()) {
-            en = (this.value).size();
-        } else if ((((org.python.types.Int) end).value + (this.value).size() < 0)) {
-            en = 0;
-        } else if (((org.python.types.Int) end).value < 0) {
-            en = (this.value).size() + ((org.python.types.Int) end).value;
-        } else {
-            en = ((org.python.types.Int) end).value;
-        }
-        for (long i = st; i < en; i++) {
-            try {
-                if (((org.python.types.Bool) ((value.get((int) i)).__eq__(item))).value) {
-                    return new org.python.types.Int(i);
-                }
-            } catch (ClassCastException cce) {
-                throw new org.python.exceptions.ValueError("tuple.index(x): x not in tuple");
-            }
-        }
-        throw new org.python.exceptions.ValueError("tuple.index(x): x not in tuple");
+        return index;
     }
 
     @org.python.Method(
