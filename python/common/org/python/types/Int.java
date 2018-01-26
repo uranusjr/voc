@@ -859,13 +859,51 @@ public class Int extends org.python.types.Object {
         return new org.python.types.Float((float) this.value);
     }
 
+    /** Implement "Python-style" rounding.
+     *
+     * Python implements "Dutch rounding", which is different from Java's
+     * Math.round. This essentially ports longobject.c::long_round to Java.
+     */
+    private long roundLong(long digitCount) {
+        double factor = Math.pow(10, digitCount);
+
+        // q, r = divmod(this, b)
+        // TODO: Refactor this and __divmod__ (also __floordiv__ and __mod__,
+        // inherently) to share some logic.
+        long b = (long) factor;
+        long q = (long) Math.floor(this.value / factor);
+        long r = this.value % b;
+        if (r < 0) {
+            r += b;
+        }
+
+        // Essentially longobject.c::_PyLong_DivmodNear.
+        // Round up if either r / b > 0.5, or r / b == 0.5 and q is odd.
+        // The expression r / b > 0.5 is equivalent to 2 * r > b if b is
+        // positive, 2 * r < b if b negative.
+        boolean moreThanHalf = b > 0 ? (2 * r > b) : (2 * r < b);
+        boolean exactlyHalf = (2 * r == b);
+        if (moreThanHalf || exactlyHalf && q % 2 != 0) {
+            q += 1;
+            r -= b;
+        }
+        return this.value - r;
+    }
+
     @org.python.Method(
             __doc__ = "Rounding an Integral returns itself.\nRounding with an ndigits argument also returns an integer."
     )
     public org.python.Object __round__(org.python.Object ndigits) {
-        if (ndigits instanceof org.python.types.Int) {
+        if (!(ndigits instanceof org.python.types.Int)) {
+            throw new org.python.exceptions.TypeError("'" + ndigits.typeName() + "' object cannot be interpreted as an integer");
+        }
+        long digitCount = ((org.python.types.Int) ndigits).value;
+
+        // If ndigits >= 0, no rounding is necessary; return self unchanged.
+        if (digitCount >= 0) {
             return new org.python.types.Int(this.value);
         }
-        throw new org.python.exceptions.TypeError("'" + ndigits.typeName() + "' object cannot be interpreted as an integer");
+
+        return new org.python.types.Int(roundLong(-digitCount));
     }
 }

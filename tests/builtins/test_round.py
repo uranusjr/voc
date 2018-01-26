@@ -6,6 +6,7 @@ class RoundTests(TranspileTestCase):
 
 
 class BuiltinRoundFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
+
     functions = ["round"]
 
     not_implemented = [
@@ -20,3 +21,11 @@ class BuiltinRoundFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_set',
         'test_slice',
     ]
+
+    def test_round_int(self):
+        self.assertCodeExecution('print(round(42, 0))')
+        self.assertCodeExecution('print(round(-42, 0))')
+        self.assertCodeExecution('print(round(42, 3))')
+        self.assertCodeExecution('print(round(-42, 3))')
+        self.assertCodeExecution('print(round(508191992, -8))')
+        self.assertCodeExecution('print(round(-508191992, -8))')
